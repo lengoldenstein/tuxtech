@@ -1,0 +1,126 @@
+---
+# tasks file for baserhel8-tuxtech
+- name: 'Put SELinux in permissive mode, logging actions that would be blocked.'
+  selinux:
+    policy: 'targeted'
+    state: 'permissive'
+  tags: 'kernel'
+
+
+- name: 'Update installed software'
+  dnf:
+    name: '*'
+    state: 'latest'
+  tags: 'update'
+
+
+- name: 'Install required packages'  
+  dnf:
+    name:
+      - 'gvim'
+      - 'httpd'
+      - 'nfs-utils'
+      - 'postfix'
+      - 'samba'      
+      - 'samba-client'
+      - 'telnet'
+      - '@mysql:8.0/server'
+      - '@php:7.2/common'
+  tags: 'packages'
+
+
+- name: 'System Config: services'
+  service:
+    name: '{{ item.name }}'
+    state: '{{ item.state }}'
+    enabled: '{{ item.enabled}}'
+  loop:
+    - { name: 'atd',              state: 'started',   enabled: true }
+    - { name: 'auditd',           state: 'started',   enabled: true }
+    - { name: 'chronyd',          state: 'started',   enabled: true }
+    - { name: 'crond',            state: 'started',   enabled: true }
+    - { name: 'dbus',             state: 'started',   enabled: true }
+    - { name: 'firewalld',        state: 'stopped',   enabled: false }
+    - { name: 'httpd',            state: 'started',   enabled: true }
+    - { name: 'libstoragemgmt',   state: 'stopped',   enabled: false }
+    - { name: 'mcelog',           state: 'stopped',   enabled: false }
+    - { name: 'mysqld',           state: 'started',   enabled: true }
+    - { name: 'NetworkManager',   state: 'started',   enabled: true }
+    - { name: 'nmb',              state: 'started',   enabled: true }
+    - { name: 'polkit',           state: 'started',   enabled: true }
+    - { name: 'postfix',          state: 'started',   enabled: true }
+    - { name: 'rngd',             state: 'started',   enabled: true }
+    - { name: 'rsyslog',          state: 'started',   enabled: true }
+    - { name: 'smb',              state: 'started',   enabled: true }
+    - { name: 'smartd',           state: 'stopped',   enabled: false }
+    - { name: 'sshd',             state: 'started',   enabled: true }
+    - { name: 'sssd',             state: 'started',   enabled: true }
+    - { name: 'tuned',            state: 'started',   enabled: true }
+    - { name: 'vmtoolsd',         state: 'started',   enabled: true }
+  tags: 'services'
+
+
+- name: 'Create UserIDs'
+  user:
+    name: 'len'
+    comment: 'Len Goldenstein'
+    groups: 'wheel'
+  tags: 'userids'
+
+
+- name: 'Configure /etc/sudoers'
+  lineinfile:
+    path: '/etc/sudoers'
+    state: 'present'
+    regexp: '{{ item.regexp }}'
+    line: '{{ item.line }}'
+  loop:
+      - { regexp: '\%wheel\s+ALL=\(ALL\)\s+ALL$', line: '#%wheel  ALL=(ALL)       ALL' }
+      - { regexp: '\%wheel\s+ALL=\(ALL\)\s+NOPASSWD\:\sALL$', line: '%wheel        ALL=(ALL)       NOPASSWD: ALL' }
+  tags: 'sudo'
+
+
+- name: 'Configure grub'
+  lineinfile: 
+      path: '/etc/default/grub'
+      state: 'present'
+      regexp: '^(GRUB_CMDLINE_LINUX=)(.*) rhgb quiet'
+      line: '\1\2"'
+      backrefs: true
+  tags: 'grub'
+  notify: 'rebuild grub'
+
+
+- name: 'System Config: bash'
+  copy: 
+    dest: '/etc/profile.d/local.sh'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    content: |
+      alias ll='ls -l --color=auto -F'
+      alias ls='ls --color=auto -F'
+      alias df='df -h'
+      alias rm='rm -i'
+      alias vi='vim'
+      export PS1="[\u@\h \w]\$ "
+  tags: 'bash'
+
+
+- name: 'System Config: logrotate'
+  lineinfile:
+    path: '/etc/logrotate.conf'
+    state: 'present'
+    regexp: 'compress'
+    line: 'compress'
+  tags: 'logrotate'
+
+
+- name: 'System Config: postfix'
+  blockinfile:
+    path: '/etc/postfix/main.cf'
+    state: 'present'
+    block: 'relayhost = [mail.tuxtech.com]'
+    insertafter: 'EOF'
+  tags: 'postfix'
+  notify: 'restart postfix'

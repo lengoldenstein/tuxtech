@@ -1,0 +1,9 @@
+---
+- hosts: 'dev'
+  vars:
+  remote_user: 'root'
+  module_defaults:
+    blockinfile:
+      marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'
+  roles: 
+    - 'baserhel8-tuxtech'
