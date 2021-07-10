@@ -66,7 +66,7 @@
           - controller_number: 0
             unit_number: 0
             type: 'iso'
-            iso_path: '[nas412] /ISO Images/Linux/bootdisk_foreman1.tuxtech.com.iso'
+            iso_path: '[nas412] /ISO Images/Linux/bootdisk_{{ foreman_hostname }}.iso'
             state: 'present'
         networks:
           - name: 'VM Network'
