@@ -1,0 +1,19 @@
+[idm]
+idm1.tuxtech.com ipaddr=192.168.1.201
+idm2.tuxtech.com ipaddr=192.168.1.202
+
+[foreman]
+foreman1.tuxtech.com ipaddr=192.168.1.203 
+foreman2.tuxtech.com ipaddr=192.168.1.204 
+
+[foreman:vars]
+memory_mb=8192
+sdb_gb=80
+
+[clients]
+rhel7-1.tuxtech.com ipaddr=192.168.1.211
+rhel7-2.tuxtech.com ipaddr=192.168.1.212
+rhel8-1.tuxtech.com ipaddr=192.168.1.213
+rhel8-2.tuxtech.com ipaddr=192.168.1.214
+centstr8-1.tuxtech.com ipaddr=192.168.1.215
+centstr8-2.tuxtech.com ipaddr=192.168.1.216

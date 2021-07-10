@@ -1,0 +1,86 @@
+---
+# Configure an ESXi host
+- hosts: all
+  connection: local
+  gather_facts: true
+  vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+  vars_files:
+    - 'tuxtech-configuration.yml'
+  module_defaults:
+    # Can this be external file for cleanliness?
+    community.vmware.vmware_vm_info:
+      hostname: '{{ vmware_hostname }}'
+      username: '{{ vmware_username }}'
+      password: '{{ vmware_password }}'
+      validate_certs: false
+    community.vmware.vmware_guest:
+      hostname: '{{ vmware_hostname }}'
+      username: '{{ vmware_username }}'
+      password: '{{ vmware_password }}'
+      validate_certs: false
+    community.vmware.vmware_guest_boot_manager:
+      hostname: '{{ vmware_hostname }}'
+      username: '{{ vmware_username }}'
+      password: '{{ vmware_password }}'
+      validate_certs: false
+    blockinfile:
+      marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'
+  tasks:
+    # - name: 'Gather all registered virtual machines'
+    #   community.vmware.vmware_vm_info:
+    #   register: vminfo
+    #   delegate_to: 'localhost'
+
+    # - name: 'debug'
+    #   debug:
+    #     # var: vminfo.virtual_machines
+    #     var: ansible_date_time
+
+    - name: 'Create Virtual Machine'
+      community.vmware.vmware_guest:
+        name: '{{ inventory_hostname }}'
+        annotation: 'TuxTech automated provisioning: {{ inventory_hostname }} {{ ansible_date_time.date }} {{ ansible_date_time.time }}'
+        folder: '/ha-datacenter/vm'
+        guest_id: 'centos64Guest'
+        hardware:
+          num_cpus: '{{ num_cpus | default(2) }}'
+          num_cpu_cores_per_socket: 1
+          memory_mb: '{{ memory_mb | default(2048) }}'
+          scsi: 'paravirtual'
+          boot_firmware: 'bios'
+          version: 13
+        datastore: 'nas412'
+        disk:
+          - size_gb: '{{ sda_gb | default(1) }}'
+            type: 'thin'
+          - size_gb: '{{ sdb_gb | default(20) }}'
+            type: 'thin'
+        cdrom:
+          - controller_number: 0
+            unit_number: 0
+            type: 'iso'
+            iso_path: '[nas412] /ISO Images/Linux/bootdisk_foreman1.tuxtech.com.iso'
+            state: 'present'
+        networks:
+          - name: 'VM Network'
+            device_type: 'vmxnet3'
+            connected: true
+            start_connected: true
+        state: 'present'
+      register: 'vmresult'
+      # delegate_to: 'localhost'
+
+    # - name: 'debug'
+    #   debug:
+    #     var: vmresult
+
+    - name: 'Set BIOS Boot wait time to 4000ms'
+      community.vmware.vmware_guest_boot_manager:
+        name: '{{ inventory_hostname }}'
+        boot_delay: 4000
+      # delegate_to: 'localhost'
+
+# Power On VM to get MAC
+
+# Register host in foreman

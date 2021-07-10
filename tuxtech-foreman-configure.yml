@@ -1,0 +1,125 @@
+---
+# Perform required infrastructure configuration in Foreman
+# OS commands run directly on foreman server.  API commands run on localhost
+- hosts: '{{ foreman_hostname }}'
+  remote_user: 'root'
+  # become: true
+  gather_facts: true
+  vars:
+    # ansible_python_interpreter: '{{ ansible_playbook_python }}'
+  vars_files:
+    - 'tuxtech-configuration.yml'
+  module_defaults:
+    # Can this be external file for cleanliness?
+    community.vmware.vmware_vm_info:
+      hostname: '{{ vmware_hostname }}'
+      username: '{{ vmware_username }}'
+      password: '{{ vmware_password }}'
+      validate_certs: false
+    community.vmware.vmware_guest:
+      hostname: '{{ vmware_hostname }}'
+      username: '{{ vmware_username }}'
+      password: '{{ vmware_password }}'
+      validate_certs: false
+    theforeman.foreman.subnet:
+      username: '{{ foreman_username }}'
+      password: '{{ foreman_password }}'
+      server_url: 'https://{{ foreman_hostname }}'
+      validate_certs: false
+    theforeman.foreman.partition_table:
+      username: '{{ foreman_username }}'
+      password: '{{ foreman_password }}'
+      server_url: 'https://{{ foreman_hostname }}'
+      validate_certs: false
+    theforeman.foreman.operatingsystem:
+      username: '{{ foreman_username }}'
+      password: '{{ foreman_password }}'
+      server_url: 'https://{{ foreman_hostname }}'
+      validate_certs: false
+    blockinfile:
+      marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'
+  tasks:
+
+    - name: 'Validate required packages'
+      ansible.builtin.dnf:
+        name:
+          - 'rubygem-hammer_cli_foreman_bootdisk'     # Hammer CLI plug-in for bootdisk
+        state: 'present'
+
+
+    - name: 'Define local subnet'
+      theforeman.foreman.subnet:
+        name: '192.168.1.0'
+        network: '192.168.1.0'
+        network_type: 'IPv4'
+        mask: '255.255.255.0'
+        gateway: '192.168.1.1'
+        dns_primary: '192.168.1.6'
+        dns_secondary: '192.168.1.1'
+        boot_mode: 'Static'
+        mtu: 1500
+        ipam: 'None'
+        domains:
+          - 'tuxtech.com'
+        remote_execution_proxies:
+          - '{{ foreman_hostname }}'
+        locations:
+          - 'Default Location'
+        organizations:
+          - 'TuxTech'
+        state: 'present'
+      delegate_to: 'localhost'
+
+
+    - name: 'TuxTech Partition Table'
+      theforeman.foreman.partition_table:
+        name: 'Kickstart default - TuxTech'
+        os_family: 'Redhat'
+        locations:
+          - 'Default Location'
+        organizations:
+          - 'TuxTech'
+        locked: false
+        layout: |
+          zerombr
+          clearpart --all --initlabel
+          # Physical layout
+          partition /boot --ondisk=sda --size=1000  --grow --fstype=xfs --asprimary
+          partition pv.21 --onpart=sdb --size=16384 --grow
+          # LVM layout
+          volgroup vg_root pv.21
+          logvol /     --vgname=vg_root --name=lv_root --size=10240 --fstype=xfs
+          logvol /home --vgname=vg_root --name=lv_home --size=2048  --fstype=xfs
+          logvol swap  --vgname=vg_root --name=lv_swap --size=4096
+        state: 'present'
+      delegate_to: 'localhost'
+
+
+    - name: 'CentOS Stream Operating System'
+      theforeman.foreman.operatingsystem:
+        name: 'CentOS_Stream'
+        major: 8
+        description: 'CentOS Stream 8'
+        os_family: 'Redhat'
+        ptables:
+          - 'Kickstart default'
+          - 'Kickstart default - TuxTech'
+      delegate_to: 'localhost'
+
+
+    # Setup hammer credentials
+
+
+    - name: 'Generate boot ISO'
+    # https://github.com/theforeman/foreman_bootdisk
+    # https://github.com/theforeman/hammer_cli_foreman_bootdisk
+    #  foreman-rake bootdisk:generate:generic OUTPUT=/tmp/foreman.iso
+      ansible.builtin.command:
+        cmd: '/usr/sbin/foreman-rake bootdisk:generate:generic OUTPUT=/tmp/bootdisk_{{ foreman_hostname }}.iso'
+        # cmd: '/usr/bin/hammer bootdisk generic'
+      when:
+        # Add more logical check - if file exists and older than 1 day?
+        - true
+
+
+    # Upload to vmware
