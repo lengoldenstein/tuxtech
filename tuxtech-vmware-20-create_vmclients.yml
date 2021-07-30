@@ -10,11 +10,6 @@
     - 'tuxtech-configuration.yml'
   module_defaults:
     # Can this be external file for cleanliness?
-    community.vmware.vmware_vm_info:
-      hostname: '{{ vmware_hostname }}'
-      username: '{{ vmware_username }}'
-      password: '{{ vmware_password }}'
-      validate_certs: false
     community.vmware.vmware_guest:
       hostname: '{{ vmware_hostname }}'
       username: '{{ vmware_username }}'
