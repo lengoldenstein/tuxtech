@@ -34,17 +34,6 @@
       marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'
   tasks:
 
-    # - name: 'Gather all registered virtual machines'
-    #   community.vmware.vmware_vm_info:
-    #   register: vminfo
-    #   delegate_to: 'localhost'
-
-    # - name: 'debug'
-    #   debug:
-    #     # var: vminfo.virtual_machines
-    #     var: ansible_date_time
-
-
     - name: 'Create Virtual Machine'
       community.vmware.vmware_guest:
         name: '{{ inventory_hostname }}'
@@ -76,11 +65,6 @@
             connected: true
             start_connected: true
         state: 'present'
-      register: 'vmresult'
-
-    # - name: 'debug'
-    #   debug:
-    #     var: vmresult
 
 
     - name: 'Set BIOS Boot wait time to 4000ms'

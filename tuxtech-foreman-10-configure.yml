@@ -101,7 +101,9 @@
           - 'Kickstart default - TuxTech'
       delegate_to: 'localhost'
 
+
     # Create provisioning hostgroup
+
 
     # Setup hammer credentials
 

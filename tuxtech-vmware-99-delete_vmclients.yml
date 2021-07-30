@@ -1,0 +1,26 @@
+---
+# Delete virtual guest clients from VMware
+# All API commands so use connect: local
+- hosts: 'all'
+  connection: 'local'
+  gather_facts: true
+  vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+  vars_files:
+    - 'tuxtech-configuration.yml'
+  module_defaults:
+    # Can this be external file for cleanliness?
+    community.vmware.vmware_guest:
+      hostname: '{{ vmware_hostname }}'
+      username: '{{ vmware_username }}'
+      password: '{{ vmware_password }}'
+      validate_certs: false
+    blockinfile:
+      marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'
+  tasks:
+
+    - name: 'Delete Virtual Machine'
+      community.vmware.vmware_guest:
+        name: '{{ inventory_hostname }}'
+        force: true
+        state: 'absent'

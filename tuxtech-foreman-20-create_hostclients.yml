@@ -1,6 +1,6 @@
 ---
 # Populate Linux hosts in to Foreman with correct host attributes, eg: MAC address
-- hosts: 'clients'
+- hosts: 'all'
   connection: 'local'
   gather_facts: true
   vars:
@@ -19,16 +19,6 @@
       username: '{{ vmware_username }}'
       password: '{{ vmware_password }}'
       validate_certs: false
-    community.vmware.vmware_guest:
-      hostname: '{{ vmware_hostname }}'
-      username: '{{ vmware_username }}'
-      password: '{{ vmware_password }}'
-      validate_certs: false
-    community.vmware.vmware_guest_boot_manager:
-      hostname: '{{ vmware_hostname }}'
-      username: '{{ vmware_username }}'
-      password: '{{ vmware_password }}'
-      validate_certs: false
     blockinfile:
       marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'
   tasks:
@@ -40,33 +30,19 @@
         datacenter: 'ha-datacenter'
       register: vmguest_info
 
-    - name: 'debug'
-      debug:
-        var: vmguest_info.instance.hw_eth0.macaddress
 
     - name: 'Register client to Foreman'
       theforeman.foreman.host:
         name: '{{ inventory_hostname }}'
         hostgroup: 'Tuxtech Provision'
-        # interface_attributes:
-        #   - type: 'interface'
-        #     primary: true
-          #   name: 'eth0'
-          #   mac: 'EE:BB:01:02:03:04'
-          #   provision: true
-        mac: '{{ vminfo.instance.hw_eth0.macaddress }}'
-        ip: '{{ ipaddr }}'
+        interfaces_attributes:
+          - type: 'interface'
+            identifier: 'eth0'
+            mac: '{{ vmguest_info.instance.hw_eth0.macaddress }}'
+            ip: '{{ ipaddr }}'
+            primary: true
+            provision: true
+        build: true
         organization: 'TuxTech'
         location: 'Default Location'
         state: 'present'
-
-
-    # Provision
-    # Enable Foreman Build mode
-    # Power on
-
-
-    # - name: 'Gather all registered virtual machines'
-    #   community.vmware.vmware_vm_info:
-    #   register: vminfo
-    #   delegate_to: 'localhost'
