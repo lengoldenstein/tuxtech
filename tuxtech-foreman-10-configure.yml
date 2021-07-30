@@ -11,12 +11,7 @@
     - 'tuxtech-configuration.yml'
   module_defaults:
     # Can this be external file for cleanliness?
-    community.vmware.vmware_vm_info:
-      hostname: '{{ vmware_hostname }}'
-      username: '{{ vmware_username }}'
-      password: '{{ vmware_password }}'
-      validate_certs: false
-    community.vmware.vmware_guest:
+    community.vmware.vsphere_copy:
       hostname: '{{ vmware_hostname }}'
       username: '{{ vmware_username }}'
       password: '{{ vmware_password }}'
@@ -106,11 +101,12 @@
           - 'Kickstart default - TuxTech'
       delegate_to: 'localhost'
 
+    # Create provisioning hostgroup
 
     # Setup hammer credentials
 
 
-    - name: 'Generate boot ISO'
+    - name: 'Generate foreman boot ISO'
     # https://github.com/theforeman/foreman_bootdisk
     # https://github.com/theforeman/hammer_cli_foreman_bootdisk
     #  foreman-rake bootdisk:generate:generic OUTPUT=/tmp/foreman.iso
@@ -122,4 +118,8 @@
         - true
 
 
-    # Upload to vmware
+    - name: 'Copy /tmp/bootdisk_{{ foreman_hostname }}.iso to ESXi datastore'
+      community.vmware.vsphere_copy:
+        src: '/tmp/bootdisk_{{ foreman_hostname }}.iso'
+        datastore: 'nas412'
+        path: '/ISO Images/Linux/bootdisk_{{ foreman_hostname }}.iso'

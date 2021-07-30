@@ -1,6 +1,6 @@
 ---
 # Configure a net-new ESXi host
-- hosts: 'esxi.tuxtech.com'
+- hosts: 'esxi'
   connection: 'local'
   gather_facts: true
   vars:
@@ -73,6 +73,7 @@
       community.vmware.vmware_host_service_manager:
         esxi_hostname: '{{ vmware_hostname }}'
         service_name: 'ntpd'
+        service_policy: 'on'
         state: 'present'
 
 

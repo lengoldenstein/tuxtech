@@ -1,7 +1,7 @@
 ---
 # Populate Linux hosts in to Foreman with correct host attributes, eg: MAC address
-- hosts: all
-  connection: local
+- hosts: 'clients'
+  connection: 'local'
   gather_facts: true
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
@@ -9,7 +9,12 @@
     - 'tuxtech-configuration.yml'
   module_defaults:
     # Can this be external file for cleanliness?
-    community.vmware.vmware_vm_info:
+    theforeman.foreman.host:
+      username: '{{ foreman_username }}'
+      password: '{{ foreman_password }}'
+      server_url: 'https://{{ foreman_hostname }}'
+      validate_certs: false
+    community.vmware.vmware_guest_info:
       hostname: '{{ vmware_hostname }}'
       username: '{{ vmware_username }}'
       password: '{{ vmware_password }}'
@@ -28,27 +33,40 @@
       marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'
   tasks:
 
-    - name: 'Gather all registered virtual machines'
-      community.vmware.vmware_vm_info:
-      register: vminfo
-      delegate_to: 'localhost'
-
+    # Lookup MAC for virtual machine guest
+    - name: Gather info from standalone ESXi server having datacenter as 'ha-datacenter'
+      community.vmware.vmware_guest_info:
+        name: '{{ inventory_hostname }}'
+        datacenter: 'ha-datacenter'
+      register: vmguest_info
 
     - name: 'debug'
       debug:
-        # var: vminfo.virtual_machines
-        var: ansible_date_time
+        var: vmguest_info.instance.hw_eth0.macaddress
 
-
-    - name: 'Set BIOS Boot wait time to 4000ms'
-      community.vmware.vmware_guest_boot_manager:
+    - name: 'Register client to Foreman'
+      theforeman.foreman.host:
         name: '{{ inventory_hostname }}'
-        boot_delay: 4000
-        # Set boot mode to cd-rom for provision
-      # delegate_to: 'localhost'
+        hostgroup: 'Tuxtech Provision'
+        # interface_attributes:
+        #   - type: 'interface'
+        #     primary: true
+          #   name: 'eth0'
+          #   mac: 'EE:BB:01:02:03:04'
+          #   provision: true
+        mac: '{{ vminfo.instance.hw_eth0.macaddress }}'
+        ip: '{{ ipaddr }}'
+        organization: 'TuxTech'
+        location: 'Default Location'
+        state: 'present'
 
 
-      # Register host in foreman
+    # Provision
+    # Enable Foreman Build mode
+    # Power on
 
 
-      # Set boot mode to disk for regular access
+    # - name: 'Gather all registered virtual machines'
+    #   community.vmware.vmware_vm_info:
+    #   register: vminfo
+    #   delegate_to: 'localhost'
