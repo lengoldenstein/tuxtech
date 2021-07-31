@@ -34,7 +34,7 @@
     - name: 'Register client to Foreman'
       theforeman.foreman.host:
         name: '{{ inventory_hostname }}'
-        hostgroup: 'Tuxtech Provision'
+        hostgroup: '{{ hostgroup }}'
         interfaces_attributes:
           - type: 'interface'
             identifier: 'eth0'

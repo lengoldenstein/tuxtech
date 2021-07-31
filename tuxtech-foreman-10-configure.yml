@@ -31,6 +31,11 @@
       password: '{{ foreman_password }}'
       server_url: 'https://{{ foreman_hostname }}'
       validate_certs: false
+    theforeman.foreman.hostgroup:
+      username: '{{ foreman_username }}'
+      password: '{{ foreman_password }}'
+      server_url: 'https://{{ foreman_hostname }}'
+      validate_certs: false
     blockinfile:
       marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'
   tasks:
@@ -103,6 +108,28 @@
 
 
     # Create provisioning hostgroup
+    - name: 'Create a Hostgroup'
+      theforeman.foreman.hostgroup:
+        name: 'CentOSStream_8_GP'
+        description: 'CentOS Stream 8 - General Purpose'
+        lifecycle_environment: 'Library'
+        content_view: 'Default Organization View'
+        content_source: '{{ foreman_hostname }}'
+        environment: 'production'
+        puppet_proxy: '{{ foreman_hostname }}'
+        puppet_ca_proxy: '{{ foreman_hostname }}'
+        domain: 'tuxtech.com'
+        subnet: '192.168.1.0'
+        architecture: 'x86_64'
+        operatingsystem: 'CentOS Stream 8'
+        medium: 'CentOS Stream'
+        ptable: 'Kickstart default - TuxTech'
+        pxe_loader: 'PXELinux BIOS'
+        root_pass: '{{ foreman_password }}'
+        locations: 'Default Location'
+        organization: 'TuxTech'
+        state: 'present'
+      delegate_to: 'localhost'
 
 
     # Setup hammer credentials
