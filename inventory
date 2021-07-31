@@ -11,8 +11,10 @@ memory_mb=8192
 sdb_gb=80
 
 [clients]
-rhel7-1.tuxtech.com     ipaddr='192.168.1.211'  hostgroup='CentOSStream_8_GP'
-rhel7-2.tuxtech.com     ipaddr='192.168.1.212'  hostgroup='CentOSStream_8_GP'
+centos7-1.tuxtech.com   ipaddr='192.168.1.217'  hostgroup='CentOS_7_GP'
+centos7-2.tuxtech.com   ipaddr='192.168.1.218'  hostgroup='CentOS_7_GP'
+rhel7-1.tuxtech.com     ipaddr='192.168.1.211'  hostgroup='CentOS_7_GP'
+rhel7-2.tuxtech.com     ipaddr='192.168.1.212'  hostgroup='CentOS_7_GP'
 rhel8-1.tuxtech.com     ipaddr='192.168.1.213'  hostgroup='CentOSStream_8_GP'
 rhel8-2.tuxtech.com     ipaddr='192.168.1.214'  hostgroup='CentOSStream_8_GP'
 centstr8-1.tuxtech.com  ipaddr='192.168.1.215'  hostgroup='CentOSStream_8_GP'

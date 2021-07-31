@@ -95,20 +95,66 @@
       delegate_to: 'localhost'
 
 
-    - name: 'CentOS Stream Operating System'
+    - name: 'CentOS 7 Operating System'
+      theforeman.foreman.operatingsystem:
+        name: 'CentOS'
+        major: 7
+        description: 'CentOS 7'
+        os_family: 'Redhat'
+        password_hash: 'SHA512'
+        architectures:
+          - 'x86_64'
+        ptables:
+          - 'Kickstart default'
+          - 'Kickstart default - TuxTech'
+        media:
+          - 'CentOS 7 mirror'
+      delegate_to: 'localhost'
+
+
+    - name: 'CentOS Stream 8 Operating System'
       theforeman.foreman.operatingsystem:
         name: 'CentOS_Stream'
         major: 8
         description: 'CentOS Stream 8'
         os_family: 'Redhat'
+        password_hash: 'SHA512'
+        architectures:
+          - 'x86_64'
         ptables:
           - 'Kickstart default'
           - 'Kickstart default - TuxTech'
+        media:
+          - 'CentOS Stream'
       delegate_to: 'localhost'
 
 
     # Create provisioning hostgroup
-    - name: 'Create a Hostgroup'
+    - name: 'Create Hostgroup: CentOS_7_GP'
+      theforeman.foreman.hostgroup:
+        name: 'CentOS_7_GP'
+        description: 'CentOS 7 - General Purpose'
+        lifecycle_environment: 'Library'
+        content_view: 'Default Organization View'
+        content_source: '{{ foreman_hostname }}'
+        environment: 'production'
+        puppet_proxy: '{{ foreman_hostname }}'
+        puppet_ca_proxy: '{{ foreman_hostname }}'
+        domain: 'tuxtech.com'
+        subnet: '192.168.1.0'
+        architecture: 'x86_64'
+        operatingsystem: 'CentOS 7'
+        medium: 'CentOS 7 mirror'
+        ptable: 'Kickstart default - TuxTech'
+        pxe_loader: 'PXELinux BIOS'
+        root_pass: '{{ foreman_password }}'
+        locations: 'Default Location'
+        organization: 'TuxTech'
+        state: 'present'
+      delegate_to: 'localhost'
+
+
+    - name: 'Create Hostgroup: CentOSStream_8_GP'
       theforeman.foreman.hostgroup:
         name: 'CentOSStream_8_GP'
         description: 'CentOS Stream 8 - General Purpose'
