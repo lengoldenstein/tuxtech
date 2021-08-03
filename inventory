@@ -1,10 +1,10 @@
 [idm]
-idm1.tuxtech.com ipaddr=192.168.1.201
-idm2.tuxtech.com ipaddr=192.168.1.202
+idm1.tuxtech.com        ipaddr=192.168.1.201    hostgroup='CentOSStream_8_GP'
+idm2.tuxtech.com        ipaddr=192.168.1.202    hostgroup='CentOSStream_8_GP'
 
 [foreman]
-foreman1.tuxtech.com ipaddr=192.168.1.203 
-foreman2.tuxtech.com ipaddr=192.168.1.204 
+foreman1.tuxtech.com    ipaddr=192.168.1.203
+foreman2.tuxtech.com    ipaddr=192.168.1.204
 
 [foreman:vars]
 memory_mb=8192

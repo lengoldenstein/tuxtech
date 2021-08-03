@@ -1,0 +1,23 @@
+---
+# Configuration for CentOSStream_8_GP host groups
+- hosts: 'all'
+  # vars:
+  remote_user: root
+  tasks:
+
+    - name: 'Configure Enterprise Linux/CentOS 8 Base OS'
+      import_tasks: 'tuxtech-os-el8_postprovision.yml'
+
+    # Configure additional "General Purpose" requirements
+    - name: 'Reboot'
+      ansible.builtin.reboot:
+
+
+  handlers:
+    - name: 'rebuild grub'
+      ansible.builtin.command: '/usr/sbin/grub2-mkconfig -o /boot/grub2/grub.cfg'
+
+    - name: 'restart postfix'
+      ansible.builtin.service:
+        name: 'postfix'
+        state: 'restarted'
