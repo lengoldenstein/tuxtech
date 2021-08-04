@@ -16,13 +16,13 @@
     name:
       - 'gvim'
       - 'httpd'
-      #- 'nfs-utils'
+      # - 'nfs-utils'
       - 'postfix'
-      #- 'samba'      
-      #- 'samba-client'
+      # - 'samba'
+      # - 'samba-client'
       - 'telnet'
-      #- '@mysql:8.0/server'
-      #- '@php:7.2/common'
+      # - '@mysql:8.0/server'
+      #-  '@php:7.2/common'
 
 
 - name: 'System Config: services'
@@ -38,17 +38,17 @@
     - { name: 'dbus',             state: 'started',   enabled: true }
     - { name: 'firewalld',        state: 'stopped',   enabled: false }
     - { name: 'httpd',            state: 'started',   enabled: true }
-    #- { name: 'libstoragemgmt',   state: 'stopped',   enabled: false }
-    #- { name: 'mcelog',           state: 'stopped',   enabled: false }
-    #- { name: 'mysqld',           state: 'started',   enabled: true }
+    # - { name: 'libstoragemgmt',   state: 'stopped',   enabled: false }
+    # - { name: 'mcelog',           state: 'stopped',   enabled: false }
+    # - { name: 'mysqld',           state: 'started',   enabled: true }
     - { name: 'NetworkManager',   state: 'started',   enabled: true }
-    #- { name: 'nmb',              state: 'started',   enabled: true }
+    # - { name: 'nmb',              state: 'started',   enabled: true }
     - { name: 'polkit',           state: 'started',   enabled: true }
     - { name: 'postfix',          state: 'started',   enabled: true }
-    #- { name: 'rngd',             state: 'started',   enabled: true }
+    # - { name: 'rngd',             state: 'started',   enabled: true }
     - { name: 'rsyslog',          state: 'started',   enabled: true }
-    #- { name: 'smb',              state: 'started',   enabled: true }
-    #- { name: 'smartd',           state: 'stopped',   enabled: false }
+    # - { name: 'smb',              state: 'started',   enabled: true }
+    # - { name: 'smartd',           state: 'stopped',   enabled: false }
     - { name: 'sshd',             state: 'started',   enabled: true }
     - { name: 'sssd',             state: 'started',   enabled: true }
     - { name: 'tuned',            state: 'started',   enabled: true }

@@ -2,7 +2,7 @@
 # Configuration for CentOSStream_8_GP host groups
 - hosts: 'all'
   # vars:
-  remote_user: root
+  remote_user: 'root'
   tasks:
 
     - name: 'Configure Enterprise Linux/CentOS 8 Base OS'
