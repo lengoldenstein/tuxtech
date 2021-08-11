@@ -134,4 +134,8 @@
 
 
 # Operating System section BEGIN
+# Put foreman host in build mode
+# Power on VM
+# Wait
+# Configure OS for hostgroup
 # Operating System section END

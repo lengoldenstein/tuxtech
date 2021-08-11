@@ -1,0 +1,18 @@
+---
+# tasks file for 10_provision_os
+
+- block:
+  - name: 'Delete host clients in Foreman'
+    theforeman.foreman.host:
+      name: '{{ inventory_hostname }}'
+      state: 'absent'
+
+  module_defaults:
+    # Can this be external file for cleanliness?
+    theforeman.foreman.host:
+      username: '{{ foreman_username }}'
+      password: '{{ foreman_password }}'
+      server_url: 'https://{{ foreman_hostname }}'
+      validate_certs: false
+    blockinfile:
+      marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'
