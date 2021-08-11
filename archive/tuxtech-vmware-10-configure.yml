@@ -57,7 +57,7 @@
     #     password: '{{ vmware_password }}'
     #     validate_certs: false
     #     #esxi_hostname: '{{ vmware_hostname }}'
-    #     license: 'JV425-4h100-vzhh8-q23np-3a9pp'
+    #     license: 'JV425-4H100-VZHH8-Q23NP-3A9PP'
     #     state: 'present'
 
 

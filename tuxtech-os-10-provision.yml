@@ -1,4 +1,5 @@
 ---
+# Put foreman host in build mode
 # Power on VM
 # Wait
 # Configure OS for hostgroup

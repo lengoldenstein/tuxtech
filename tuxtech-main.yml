@@ -1,0 +1,137 @@
+---
+# tuxtech-main.yml
+# Main playbook for TuxTech infrastructure automations.
+# Len Goldenstein
+# len@lengoldenstein.com
+# https://github.com/lengoldenstein/tuxtech
+# Aug 2021
+
+# VMware section BEGIN
+- name: 'vmware_10 Configure settings for an ESXi host'
+  # Configure settings for an ESXi host
+  # Requirements:
+  # - ESXi host must have an IP address, basic network settings and dns entry.
+  # - ESXi host must have root password set and matched in tuxtech-configuration.yml
+  # Execution:
+  # ansible-playbook tuxtech-main.yml --tags vmware,10_configure_esxi --limit mondain.tuxtech.com
+  hosts: 'esxi'
+  connection: 'local'
+  gather_facts: true
+  vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+  vars_files:
+    - 'tuxtech-configuration.yml'
+  roles:
+    - 'tuxtech.vmware.10_configure_esxi'
+  tags:
+    - 'vmware_10'
+
+
+- name: 'vmware_20 Create virtual machine guest clients in VMware'
+  # Create virtual machine guest clients in VMware
+  # Requirements:
+  # - ESXi host must be either in evaluation mode or licensed for vSphere APIs
+  # Execution:
+  # ansible-playbook tuxtech-main.yml --tags vmware,20_create_vmclients --limit idm,foreman
+  hosts: 'all'
+  connection: 'local'
+  gather_facts: true
+  vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+  vars_files:
+    - 'tuxtech-configuration.yml'
+  roles:
+    - 'tuxtech.vmware.20_create_vmclients'
+  tags:
+    - 'vmware_20'
+    - 'provision'
+
+
+- name: 'vmware_99 Delete virtual guest clients from VMware'
+  # Delete virtual guest clients from VMware
+  # Requirements:
+  # - ESXi host must be either in evaluation mode or licensed for vSphere APIs
+  # Execution:
+  # ansible-playbook tuxtech-main.yml --tags vmware,99 --limit clients
+  hosts: 'all'
+  connection: 'local'
+  gather_facts: true
+  vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+  vars_files:
+    - 'tuxtech-configuration.yml'
+  roles:
+    - 'tuxtech.vmware.99_delete_vmclients'
+  tags:
+    - 'vmware_99'
+    - 'cleanup'
+# VMware section END
+
+
+# Foreman/Satellite section BEGIN
+- name: 'foreman.10 Configure settings for an ESXi host'
+  # Configure settings for an ESXi host
+  # Requirements:
+  # - ESXi host must have an IP address, basic network settings and dns entry.
+  # - ESXi host must have root password set and matched in tuxtech-configuration.yml
+  # Execution:
+  # ansible-playbook tuxtech-main.yml --tags foreman,10 --limit foreman1.tuxtech.com
+  hosts: 'all'
+  # connection: 'local'
+  remote_user: 'root'
+  gather_facts: true
+  vars:
+    # ansible_python_interpreter: '{{ ansible_playbook_python }}'
+  vars_files:
+    - 'tuxtech-configuration.yml'
+  roles:
+    - 'tuxtech.foreman.10_configure_foreman'
+  tags:
+    - 'foreman_10'
+
+
+- name: 'foreman_20 Configure settings for an ESXi host'
+  # Configure settings for an ESXi host
+  # Requirements:
+  # - ESXi host must have an IP address, basic network settings and dns entry.
+  # - ESXi host must have root password set and matched in tuxtech-configuration.yml
+  # Execution:
+  # ansible-playbook tuxtech-main.yml --tags foreman,20 --limit foreman1.tuxtech.com
+  hosts: 'all'
+  connection: 'local'
+  # remote_user: 'root'
+  gather_facts: true
+  vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+  vars_files:
+    - 'tuxtech-configuration.yml'
+  roles:
+    - 'tuxtech.foreman.20_create_hostclients'
+  tags:
+    - 'foreman_20'
+    - 'provision'
+
+
+- name: 'foreman_99 Delete virtual guest clients from VMware'
+  # Delete virtual guest clients from VMware
+  # Requirements:
+  # - ESXi host must be either in evaluation mode or licensed for vSphere APIs
+  # Execution:
+  # ansible-playbook tuxtech-main.yml --tags vmware,99 --limit clients
+  hosts: 'all'
+  connection: 'local'
+  gather_facts: true
+  vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+  vars_files:
+    - 'tuxtech-configuration.yml'
+  roles:
+    - 'tuxtech.foreman.99_delete_hostclients'
+  tags:
+    - 'foreman_99'
+    - 'cleanup'
+# Foreman/Satellite section END
+
+
+# Operating System section BEGIN
+# Operating System section END

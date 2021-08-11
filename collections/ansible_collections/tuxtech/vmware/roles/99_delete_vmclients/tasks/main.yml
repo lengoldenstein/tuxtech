@@ -1,0 +1,18 @@
+---
+# tasks file for 99_delete_vmclients
+- block:
+    - name: 'Delete Virtual Machine'
+      community.vmware.vmware_guest:
+        name: '{{ inventory_hostname }}'
+        force: true
+        state: 'absent'
+
+  module_defaults:
+    # Can this be external file for cleanliness?
+    community.vmware.vmware_guest:
+      hostname: '{{ vmware_hostname }}'
+      username: '{{ vmware_username }}'
+      password: '{{ vmware_password }}'
+      validate_certs: false
+    blockinfile:
+      marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'

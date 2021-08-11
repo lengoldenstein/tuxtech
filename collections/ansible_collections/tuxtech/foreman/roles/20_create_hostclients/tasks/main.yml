@@ -1,0 +1,41 @@
+---
+# tasks file for 20_create_hostclients
+- block:
+  # Lookup MAC for virtual machine guest
+  - name: Gather info from standalone ESXi server having datacenter as 'ha-datacenter'
+    community.vmware.vmware_guest_info:
+      name: '{{ inventory_hostname }}'
+      datacenter: 'ha-datacenter'
+    register: vmguest_info
+
+
+  - name: 'Register client to Foreman'
+    theforeman.foreman.host:
+      name: '{{ inventory_hostname }}'
+      hostgroup: '{{ hostgroup }}'
+      interfaces_attributes:
+        - type: 'interface'
+          identifier: 'eth0'
+          mac: '{{ vmguest_info.instance.hw_eth0.macaddress }}'
+          ip: '{{ ipaddr }}'
+          primary: true
+          provision: true
+      build: true
+      organization: 'TuxTech'
+      location: 'Default Location'
+      state: 'present'
+
+  module_defaults:
+    # Can this be external file for cleanliness?
+    theforeman.foreman.host:
+      username: '{{ foreman_username }}'
+      password: '{{ foreman_password }}'
+      server_url: 'https://{{ foreman_hostname }}'
+      validate_certs: false
+    community.vmware.vmware_guest_info:
+      hostname: '{{ vmware_hostname }}'
+      username: '{{ vmware_username }}'
+      password: '{{ vmware_password }}'
+      validate_certs: false
+    blockinfile:
+      marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'

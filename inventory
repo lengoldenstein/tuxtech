@@ -1,6 +1,6 @@
-[idm]
-idm1.tuxtech.com        ipaddr=192.168.1.201    hostgroup='CentOSStream_8_GP'
-idm2.tuxtech.com        ipaddr=192.168.1.202    hostgroup='CentOSStream_8_GP'
+[esxi]
+esxi.tuxtech.com        ipaddr=192.168.1.4
+mondain.tuxtech.com     ipaddr=192.168.1.11
 
 [foreman]
 foreman1.tuxtech.com    ipaddr=192.168.1.203
@@ -9,6 +9,10 @@ foreman2.tuxtech.com    ipaddr=192.168.1.204
 [foreman:vars]
 memory_mb=8192
 sdb_gb=80
+
+[idm]
+idm1.tuxtech.com        ipaddr=192.168.1.201    hostgroup='CentOSStream_8_GP'
+idm2.tuxtech.com        ipaddr=192.168.1.202    hostgroup='CentOSStream_8_GP'
 
 [clients]
 centos7-1.tuxtech.com   ipaddr='192.168.1.217'  hostgroup='CentOS_7_GP'
@@ -19,7 +23,3 @@ rhel8-1.tuxtech.com     ipaddr='192.168.1.213'  hostgroup='CentOSStream_8_GP'
 rhel8-2.tuxtech.com     ipaddr='192.168.1.214'  hostgroup='CentOSStream_8_GP'
 centstr8-1.tuxtech.com  ipaddr='192.168.1.215'  hostgroup='CentOSStream_8_GP'
 centstr8-2.tuxtech.com  ipaddr='192.168.1.216'  hostgroup='CentOSStream_8_GP'
-
-[esxi]
-esxi.tuxtech.com
-mondain.tuxtech.com
