@@ -52,7 +52,7 @@
   # Requirements:
   # - ESXi host must be either in evaluation mode or licensed for vSphere APIs
   # Execution:
-  # ansible-playbook tuxtech-main.yml --tags vmware,99 --limit clients
+  # ansible-playbook tuxtech-main.yml --tags vmware_99 --limit clients
   hosts: 'all'
   connection: 'local'
   gather_facts: true
@@ -64,7 +64,7 @@
     - 'tuxtech.vmware.99_delete_vmclients'
   tags:
     - 'vmware_99'
-    - 'cleanup'
+    - 'delete'
 # VMware section END
 
 
@@ -75,8 +75,8 @@
   # - ESXi host must have an IP address, basic network settings and dns entry.
   # - ESXi host must have root password set and matched in tuxtech-configuration.yml
   # Execution:
-  # ansible-playbook tuxtech-main.yml --tags foreman,10 --limit foreman1.tuxtech.com
-  hosts: 'all'
+  # ansible-playbook tuxtech-main.yml --tags foreman_10 --limit foreman1.tuxtech.com
+  hosts: 'foreman'
   # connection: 'local'
   remote_user: 'root'
   gather_facts: true
@@ -96,7 +96,9 @@
   # - ESXi host must have an IP address, basic network settings and dns entry.
   # - ESXi host must have root password set and matched in tuxtech-configuration.yml
   # Execution:
-  # ansible-playbook tuxtech-main.yml --tags foreman,20 --limit foreman1.tuxtech.com
+  # ansible-playbook tuxtech-main.yml --tags foreman_20 --limit foreman1.tuxtech.com
+  # ansible-playbook tuxtech-main.yml --tags vmware_99 --limit clients
+
   hosts: 'all'
   connection: 'local'
   # remote_user: 'root'
@@ -106,36 +108,59 @@
   vars_files:
     - 'tuxtech-configuration.yml'
   roles:
-    - 'tuxtech.foreman.20_create_hostclients'
-  tags:
-    - 'foreman_20'
-    - 'provision'
+    - role: 'tuxtech.foreman.20_create_hostclients'
+      tags:
+        - 'foreman_20'
+        - 'provision'
+    - role: 'tuxtech.foreman.99_delete_hostclients'
+      tags:
+        - 'foreman_99'
+        - 'delete'
+  # tags:
+  #   - 'foreman_20'
+  #   - 'provision'
 
 
-- name: 'foreman_99 Delete virtual guest clients from VMware'
-  # Delete virtual guest clients from VMware
-  # Requirements:
-  # - ESXi host must be either in evaluation mode or licensed for vSphere APIs
-  # Execution:
-  # ansible-playbook tuxtech-main.yml --tags vmware,99 --limit clients
-  hosts: 'all'
-  connection: 'local'
-  gather_facts: true
-  vars:
-    ansible_python_interpreter: '{{ ansible_playbook_python }}'
-  vars_files:
-    - 'tuxtech-configuration.yml'
-  roles:
-    - 'tuxtech.foreman.99_delete_hostclients'
-  tags:
-    - 'foreman_99'
-    - 'cleanup'
+# - name: 'foreman_99 Delete virtual guest clients from VMware'
+#   # Delete virtual guest clients from VMware
+#   # Requirements:
+#   # - ESXi host must be either in evaluation mode or licensed for vSphere APIs
+#   # Execution:
+#   # ansible-playbook tuxtech-main.yml --tags vmware,99 --limit clients
+#   hosts: 'all'
+#   connection: 'local'
+#   gather_facts: true
+#   vars:
+#     ansible_python_interpreter: '{{ ansible_playbook_python }}'
+#   vars_files:
+#     - 'tuxtech-configuration.yml'
+#   roles:
+#     - 'tuxtech.foreman.99_delete_hostclients'
+#   tags:
+#     - 'foreman_99'
+#     - 'cleanup'
 # Foreman/Satellite section END
 
 
 # Operating System section BEGIN
-# Put foreman host in build mode
-# Power on VM
-# Wait
-# Configure OS for hostgroup
+- name: 'os.10 Configure settings for an ESXi host'
+  # Configure settings for an ESXi host
+  # Requirements:
+  # - ESXi host must have an IP address, basic network settings and dns entry.
+  # - ESXi host must have root password set and matched in tuxtech-configuration.yml
+  # Execution:
+  # ansible-playbook tuxtech-main.yml --tags foreman_10 --limit foreman1.tuxtech.com
+  hosts: 'all'
+  # connection: 'local'
+  remote_user: 'root'
+  gather_facts: false           # host may not exist at this point
+  vars:
+    # ansible_python_interpreter: '{{ ansible_playbook_python }}'
+  vars_files:
+    - 'tuxtech-configuration.yml'
+  roles:
+    - 'tuxtech.os.10_provision_os'
+  tags:
+    - 'os_10'
+    - 'provision'
 # Operating System section END

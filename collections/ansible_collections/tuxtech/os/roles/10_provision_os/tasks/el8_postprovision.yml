@@ -6,10 +6,10 @@
     state: 'permissive'
 
 
-- name: 'Update installed software'
-  ansible.builtin.dnf:
-    name: '*'
-    state: 'latest'
+# - name: 'Update installed software'
+#   ansible.builtin.dnf:
+#     name: '*'
+#     state: 'latest'
 
 - name: 'Install required packages'
   ansible.builtin.dnf:
@@ -22,7 +22,7 @@
       # - 'samba-client'
       - 'telnet'
       # - '@mysql:8.0/server'
-      #-  '@php:7.2/common'
+      # -  '@php:7.2/common'
 
 
 - name: 'System Config: services'
@@ -31,28 +31,28 @@
     state: '{{ item.state }}'
     enabled: '{{ item.enabled }}'
   loop:
-    - { name: 'atd',              state: 'started',   enabled: true }
-    - { name: 'auditd',           state: 'started',   enabled: true }
-    - { name: 'chronyd',          state: 'started',   enabled: true }
-    - { name: 'crond',            state: 'started',   enabled: true }
-    - { name: 'dbus',             state: 'started',   enabled: true }
-    - { name: 'firewalld',        state: 'stopped',   enabled: false }
-    - { name: 'httpd',            state: 'started',   enabled: true }
+    - {name: 'atd', state: 'started', enabled: true}
+    - {name: 'auditd', state: 'started', enabled: true}
+    - {name: 'chronyd', state: 'started', enabled: true}
+    - {name: 'crond', state: 'started', enabled: true}
+    - {name: 'dbus', state: 'started', enabled: true}
+    - {name: 'firewalld', state: 'stopped', enabled: false}
+    - {name: 'httpd', state: 'started', enabled: true}
     # - { name: 'libstoragemgmt',   state: 'stopped',   enabled: false }
     # - { name: 'mcelog',           state: 'stopped',   enabled: false }
     # - { name: 'mysqld',           state: 'started',   enabled: true }
-    - { name: 'NetworkManager',   state: 'started',   enabled: true }
+    - {name: 'NetworkManager', state: 'started', enabled: true}
     # - { name: 'nmb',              state: 'started',   enabled: true }
-    - { name: 'polkit',           state: 'started',   enabled: true }
-    - { name: 'postfix',          state: 'started',   enabled: true }
+    - {name: 'polkit', state: 'started', enabled: true}
+    - {name: 'postfix', state: 'started', enabled: true}
     # - { name: 'rngd',             state: 'started',   enabled: true }
-    - { name: 'rsyslog',          state: 'started',   enabled: true }
+    - {name: 'rsyslog', state: 'started', enabled: true}
     # - { name: 'smb',              state: 'started',   enabled: true }
     # - { name: 'smartd',           state: 'stopped',   enabled: false }
-    - { name: 'sshd',             state: 'started',   enabled: true }
-    - { name: 'sssd',             state: 'started',   enabled: true }
-    - { name: 'tuned',            state: 'started',   enabled: true }
-    - { name: 'vmtoolsd',         state: 'started',   enabled: true }
+    - {name: 'sshd', state: 'started', enabled: true}
+    - {name: 'sssd', state: 'started', enabled: true}
+    - {name: 'tuned', state: 'started', enabled: true}
+    - {name: 'vmtoolsd', state: 'started', enabled: true}
 
 
 - name: 'Create UserIDs'
@@ -69,22 +69,22 @@
     regexp: '{{ item.regexp }}'
     line: '{{ item.line }}'
   loop:
-      - { regexp: '\%wheel\s+ALL=\(ALL\)\s+ALL$', line: '#%wheel  ALL=(ALL)       ALL' }
-      - { regexp: '\%wheel\s+ALL=\(ALL\)\s+NOPASSWD\:\sALL$', line: '%wheel        ALL=(ALL)       NOPASSWD: ALL' }
+    - {regexp: '\%wheel\s+ALL=\(ALL\)\s+ALL$', line: '#%wheel  ALL=(ALL)       ALL'}
+    - {regexp: '\%wheel\s+ALL=\(ALL\)\s+NOPASSWD\:\sALL$', line: '%wheel        ALL=(ALL)       NOPASSWD: ALL'}
 
 
 - name: 'Configure grub'
-  ansible.builtin.lineinfile: 
-      path: '/etc/default/grub'
-      state: 'present'
-      regexp: '^(GRUB_CMDLINE_LINUX=)(.*) rhgb quiet'
-      line: '\1\2"'
-      backrefs: true
+  ansible.builtin.lineinfile:
+    path: '/etc/default/grub'
+    state: 'present'
+    regexp: '^(GRUB_CMDLINE_LINUX=)(.*) rhgb quiet'
+    line: '\1\2"'
+    backrefs: true
   notify: 'rebuild grub'
 
 
 - name: 'System Config: bash'
-  ansible.builtin.copy: 
+  ansible.builtin.copy:
     dest: '/etc/profile.d/local.sh'
     owner: 'root'
     group: 'root'
@@ -113,3 +113,6 @@
     block: 'relayhost = [mail.tuxtech.com]'
     insertafter: 'EOF'
   notify: 'restart postfix'
+
+- name: Force all notified handlers to run at this point, not waiting for normal sync points
+  ansible.builtin.meta: flush_handlers
