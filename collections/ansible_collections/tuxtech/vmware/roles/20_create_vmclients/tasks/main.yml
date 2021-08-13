@@ -34,6 +34,7 @@
       state: 'present'
     delegate_to: 'localhost'
 
+
   - name: 'Set BIOS Boot wait time to 4000ms'
     community.vmware.vmware_guest_boot_manager:
       name: '{{ inventory_hostname }}'

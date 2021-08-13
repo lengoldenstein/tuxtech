@@ -1,6 +1,7 @@
 ---
+# tasks file for 10_configure_esxi
 - block:
-  - name: 'Set NTP servers for an ESXi Host'
+  - name: 'Set NTP servers for ESXi Host'
     community.vmware.vmware_host_ntp:
       esxi_hostname: '{{ inventory_hostname }}'
       ntp_servers:
@@ -9,7 +10,7 @@
     delegate_to: 'localhost'
 
 
-  - name: 'Start ntpd setting for an ESXi Host'
+  - name: 'Start ntpd service for ESXi Host'
     community.vmware.vmware_host_service_manager:
       esxi_hostname: '{{ inventory_hostname }}'
       service_name: 'ntpd'
@@ -18,7 +19,7 @@
     delegate_to: 'localhost'
 
 
-  - name: 'Configure DNS for an ESXi host'
+  - name: 'Configure DNS for ESXi host'
     community.vmware.vmware_host_dns:
       type: 'static'
       domain: 'tuxtech.com'
@@ -29,14 +30,15 @@
     delegate_to: 'localhost'
 
 
-  - name: 'Disable IPv6 for a host system'
+  - name: 'Disable IPv6 for ESXi host'
     community.vmware.vmware_host_ipv6:
       esxi_hostname: '{{ inventory_hostname }}'
       state: 'disabled'
     delegate_to: 'localhost'
+    # TODO: Trigger a reboot if this changes
 
 
-  - name: 'Mount NFS v4.1 datastores to ESXi'
+  - name: 'Mount NFS v4.1 datastores to ESXi host'
     community.vmware.vmware_host_datastore:
       datastore_name: '{{ item.name }}'
       datastore_type: '{{ item.type }}'
@@ -50,7 +52,7 @@
     delegate_to: 'localhost'
 
 
-  - name: 'Set the Power Management Policy of a host system to balanced'
+  - name: 'Set the Power Management Policy to balanced'
     community.vmware.vmware_host_powermgmt_policy:
       esxi_hostname: '{{ inventory_hostname }}'
       policy: 'balanced'
