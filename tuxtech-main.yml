@@ -8,38 +8,32 @@
 
 # VMware section BEGIN
 - name: 'VMware Configuration'
-  # Configure settings for an ESXi host
   hosts: 'all'
   remote_user: 'root'
   # connection: 'local'  # not needed due to role tasks using delegate_to: 'localhost'
   gather_facts: false
   vars:
-    # ansible_python_interpreter: '{{ ansible_playbook_python }}'
+    # ansible_python_interpreter: '{{ ansible_playbook_python }}'  # same as connection: 'local'
   vars_files:
     - 'tuxtech-configuration.yml'
   roles:
     - role: 'tuxtech.vmware.10_configure_esxi'
-      # Requirements:
+      # Configure settings for an ESXi host
       # - ESXi host must have an IP address, basic network settings and dns entry.
       # - ESXi host must have root password set and matched in tuxtech-configuration.yml
-      # Execution:
-      # ansible-playbook tuxtech-main.yml --tags vmware_10 --limit mondain.tuxtech.com
+      # ansible-playbook tuxtech-main.yml --tags vmware_10 --limit esxi
       tags:
         - 'vmware_10'
     - role: 'tuxtech.vmware.20_create_vmclients'
       # Create VMware virtual machine guest clients
-      # Requirements:
       # - ESXi host must be either in evaluation mode or licensed for vSphere APIs
-      # Execution:
-      # ansible-playbook tuxtech-main.yml --tags vmware_20 --limit idm,foreman
+      # ansible-playbook tuxtech-main.yml --tags vmware_20 --limit idm,clients
       tags:
         - 'vmware_20'
         - 'provision'
     - role: 'tuxtech.vmware.99_delete_vmclients'
       # Delete VMware virtual guest clients
-      # Requirements:
       # - ESXi host must be either in evaluation mode or licensed for vSphere APIs
-      # Execution:
       # ansible-playbook tuxtech-main.yml --tags vmware_99 --limit clients
       tags:
         - 'vmware_99'
@@ -49,13 +43,6 @@
 
 # Foreman/Satellite section BEGIN
 - name: 'Foreman/Satellite Configuration'
-  # Configure settings for an ESXi host
-  # Requirements:
-  # - ESXi host must have an IP address, basic network settings and dns entry.
-  # - ESXi host must have root password set and matched in tuxtech-configuration.yml
-  # Execution:
-  # ansible-playbook tuxtech-main.yml --tags foreman_20 --limit foreman1.tuxtech.com
-  # ansible-playbook tuxtech-main.yml --tags vmware_99 --limit clients
   hosts: 'all'
   remote_user: 'root'
   gather_facts: false
@@ -64,13 +51,21 @@
     - 'tuxtech-configuration.yml'
   roles:
     - role: 'tuxtech.foreman.10_configure_foreman'
+      # Configure settings for a Foreman/Satellite server
+      # - Foreman host must have admin password set and matched in tuxtech-configuration.yml
+      # ansible-playbook tuxtech-main.yml --tags foreman_10 --limit foreman1.tuxtech.com
       tags:
         - 'foreman_10'
     - role: 'tuxtech.foreman.20_create_hostclients'
+      # Create Foreman host client definitions with MAC address from ESXi
+      # - virtual machine must exist in VMware
+      # ansible-playbook tuxtech-main.yml --tags foreman_20 --limit idm,clients
       tags:
         - 'foreman_20'
         - 'provision'
     - role: 'tuxtech.foreman.99_delete_hostclients'
+      # Delete Foreman host clients
+      # ansible-playbook tuxtech-main.yml --tags foreman_99 --limit clients
       tags:
         - 'foreman_99'
         - 'delete'
@@ -79,14 +74,7 @@
 
 # Operating System section BEGIN
 - name: 'OS Configuration'
-  # Configure settings for an ESXi host
-  # Requirements:
-  # - ESXi host must have an IP address, basic network settings and dns entry.
-  # - ESXi host must have root password set and matched in tuxtech-configuration.yml
-  # Execution:
-  # ansible-playbook tuxtech-main.yml --tags foreman_10 --limit foreman1.tuxtech.com
   hosts: 'all'
-  # connection: 'local'
   remote_user: 'root'
   gather_facts: false           # host may not exist at this point
   vars:
@@ -94,6 +82,9 @@
     - 'tuxtech-configuration.yml'
   roles:
     - 'tuxtech.os.10_provision_os'
+      # Provision and configure an operating systems
+      # - inventory host must have matching Foreman/Satellite hostgroup defined
+      # ansible-playbook tuxtech-main.yml --tags os_20 --limit idm1.tuxtech.com
   tags:
     - 'os_10'
     - 'provision'
