@@ -1,7 +1,7 @@
 ---
 # tasks file for 20_create_vmclients
 - block:
-  - name: 'Create Virtual Machine'
+  - name: 'Create VMware Virtual Machine guest'
     community.vmware.vmware_guest:
       name: '{{ inventory_hostname }}'
       annotation: 'TuxTech automated provisioning: {{ inventory_hostname }} date/time '   # {{ ansible_date_time.date }} {{ ansible_date_time.time }}'
@@ -35,26 +35,26 @@
     delegate_to: 'localhost'
 
 
-  - name: 'Set BIOS Boot wait time to 4000ms'
+  - name: 'Set VM BIOS Boot wait time to 4000ms'
     community.vmware.vmware_guest_boot_manager:
       name: '{{ inventory_hostname }}'
       boot_delay: 4000
       boot_order:
         - 'floppy'
-        - 'disk'
         - 'cdrom'
+        - 'disk'
         - 'ethernet'
     delegate_to: 'localhost'
 
 
-  - name: Toggle power (on) to generate a MAC
+  - name: Toggle VM power (on) to generate a MAC
     community.vmware.vmware_guest_powerstate:
       name: '{{ inventory_hostname }}'
       state: 'powered-on'
     delegate_to: 'localhost'
 
 
-  - name: Toggle power (off) to generate a MAC
+  - name: Toggle VM power (off) to generate a MAC
     community.vmware.vmware_guest_powerstate:
       name: '{{ inventory_hostname }}'
       state: 'powered-off'

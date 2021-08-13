@@ -1,7 +1,7 @@
 ---
 # tasks file for 99_delete_vmclients
 - block:
-    - name: 'Delete Virtual Machine'
+    - name: 'Delete VMware Virtual Machine guest'
       community.vmware.vmware_guest:
         name: '{{ inventory_hostname }}'
         force: true
