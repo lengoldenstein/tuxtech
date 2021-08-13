@@ -7,6 +7,7 @@
       name: '{{ inventory_hostname }}'
       datacenter: 'ha-datacenter'
     register: vmguest_info
+    delegate_to: 'localhost'
 
 
   - name: 'Register client to Foreman'
@@ -24,6 +25,7 @@
       organization: 'TuxTech'
       location: 'Default Location'
       state: 'present'
+    delegate_to: 'localhost'
 
   module_defaults:
     # Can this be external file for cleanliness?

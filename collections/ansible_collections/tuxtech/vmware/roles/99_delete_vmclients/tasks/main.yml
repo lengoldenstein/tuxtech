@@ -6,6 +6,7 @@
         name: '{{ inventory_hostname }}'
         force: true
         state: 'absent'
+      delegate_to: 'localhost'
 
   module_defaults:
     # Can this be external file for cleanliness?

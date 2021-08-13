@@ -5,6 +5,7 @@
     theforeman.foreman.host:
       name: '{{ inventory_hostname }}'
       state: 'absent'
+    delegate_to: 'localhost'
 
   module_defaults:
     # Can this be external file for cleanliness?

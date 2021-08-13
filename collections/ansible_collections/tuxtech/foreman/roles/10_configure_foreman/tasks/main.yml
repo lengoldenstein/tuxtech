@@ -167,18 +167,18 @@
   # https://github.com/theforeman/hammer_cli_foreman_bootdisk
   #  foreman-rake bootdisk:generate:generic OUTPUT=/tmp/foreman.iso
     ansible.builtin.command:
-      cmd: '/usr/sbin/foreman-rake bootdisk:generate:generic OUTPUT=/tmp/bootdisk_{{ foreman_hostname }}.iso'
+      cmd: '/usr/sbin/foreman-rake bootdisk:generate:generic OUTPUT=/tmp/bootdisk_{{ inventory_hostname }}.iso'
       # cmd: '/usr/bin/hammer bootdisk generic'
     when:
       # Add more logical check - if file exists and older than 1 day?
       - true
 
 
-  - name: 'Copy /tmp/bootdisk_{{ foreman_hostname }}.iso to ESXi datastore'
+  - name: 'Copy /tmp/bootdisk_{{ inventory_hostname }}.iso to ESXi datastore'
     community.vmware.vsphere_copy:
-      src: '/tmp/bootdisk_{{ foreman_hostname }}.iso'
+      src: '/tmp/bootdisk_{{ inventory_hostname }}.iso'
       datastore: 'nas412'
-      path: '/ISO Images/Linux/bootdisk_{{ foreman_hostname }}.iso'
+      path: '/ISO Images/Linux/bootdisk_{{ inventory_hostname }}.iso'
 
   module_defaults:
     # Can this be external file for cleanliness?

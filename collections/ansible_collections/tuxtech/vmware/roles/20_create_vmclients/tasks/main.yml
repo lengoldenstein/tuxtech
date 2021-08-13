@@ -4,7 +4,7 @@
   - name: 'Create Virtual Machine'
     community.vmware.vmware_guest:
       name: '{{ inventory_hostname }}'
-      annotation: 'TuxTech automated provisioning: {{ inventory_hostname }} {{ ansible_date_time.date }} {{ ansible_date_time.time }}'
+      annotation: 'TuxTech automated provisioning: {{ inventory_hostname }} date/time '   # {{ ansible_date_time.date }} {{ ansible_date_time.time }}'
       folder: '/ha-datacenter/vm'
       guest_id: 'centos64Guest'
       hardware:
@@ -32,7 +32,7 @@
           connected: true
           start_connected: true
       state: 'present'
-
+    delegate_to: 'localhost'
 
   - name: 'Set BIOS Boot wait time to 4000ms'
     community.vmware.vmware_guest_boot_manager:
@@ -43,18 +43,21 @@
         - 'disk'
         - 'cdrom'
         - 'ethernet'
+    delegate_to: 'localhost'
 
 
   - name: Toggle power (on) to generate a MAC
     community.vmware.vmware_guest_powerstate:
       name: '{{ inventory_hostname }}'
       state: 'powered-on'
+    delegate_to: 'localhost'
 
 
   - name: Toggle power (off) to generate a MAC
     community.vmware.vmware_guest_powerstate:
       name: '{{ inventory_hostname }}'
       state: 'powered-off'
+    delegate_to: 'localhost'
 
   module_defaults:
     # Can this be external file for cleanliness?
