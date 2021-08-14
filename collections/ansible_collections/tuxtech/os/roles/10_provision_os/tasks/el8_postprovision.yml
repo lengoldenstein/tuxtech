@@ -1,5 +1,5 @@
 ---
-# Base OS configuration for Enterprise Linux/CentOS 8
+# Base OS configuration for EL/CentOS 8
 - name: 'Put SELinux in permissive mode, logging actions that would be blocked.'
   ansible.posix.selinux:
     policy: 'targeted'
@@ -14,7 +14,7 @@
 - name: 'Install required packages'
   ansible.builtin.dnf:
     name:
-      - 'gvim'
+      - 'vim'
       - 'httpd'
       # - 'nfs-utils'
       - 'postfix'
