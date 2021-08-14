@@ -1,10 +1,14 @@
 ---
 # tasks file for 20_create_vmclients
 - block:
+  - name: 'Gather facts for ansible date/time variables'
+    ansible.builtin.setup:
+    delegate_to: 'localhost'
+
   - name: 'Create VMware Virtual Machine guest'
     community.vmware.vmware_guest:
       name: '{{ inventory_hostname }}'
-      annotation: 'TuxTech automated provisioning: {{ inventory_hostname }} date/time '   # {{ ansible_date_time.date }} {{ ansible_date_time.time }}'
+      annotation: 'TuxTech automated provisioning: {{ inventory_hostname }} {{ hostgroup }} {{ ansible_date_time.date }} {{ ansible_date_time.time }}'
       folder: '/ha-datacenter/vm'
       guest_id: 'centos64Guest'
       hardware:
