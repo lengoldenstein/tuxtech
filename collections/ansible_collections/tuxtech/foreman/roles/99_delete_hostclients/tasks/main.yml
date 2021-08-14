@@ -1,5 +1,5 @@
 ---
-# tasks file for 20_delete_hostclients
+# tasks file for 99_delete_hostclients
 - block:
   - name: 'Delete host clients in Foreman'
     theforeman.foreman.host:

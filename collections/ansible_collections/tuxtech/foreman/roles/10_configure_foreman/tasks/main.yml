@@ -1,14 +1,14 @@
 ---
 # tasks file for 10_configure_foreman
 - block:
-  - name: 'Validate required packages'
+  - name: 'Install required Foreman/Satellite packages'
     ansible.builtin.dnf:
       name:
         - 'rubygem-hammer_cli_foreman_bootdisk'     # Hammer CLI plug-in for bootdisk
       state: 'present'
 
 
-  - name: 'Define local subnet'
+  - name: 'Define subnet 192.168.1.0/24'
     theforeman.foreman.subnet:
       name: '192.168.1.0'
       network: '192.168.1.0'
@@ -23,7 +23,7 @@
       domains:
         - 'tuxtech.com'
       remote_execution_proxies:
-        - '{{ foreman_hostname }}'
+        - '{{ inventory_hostname }}'
       locations:
         - 'Default Location'
       organizations:
@@ -32,7 +32,7 @@
     delegate_to: 'localhost'
 
 
-  - name: 'TuxTech Partition Table'
+  - name: 'Define partition table TuxTech'
     theforeman.foreman.partition_table:
       name: 'Kickstart default - TuxTech'
       os_family: 'Redhat'
@@ -56,7 +56,7 @@
     delegate_to: 'localhost'
 
 
-  - name: 'CentOS 7 Operating System'
+  - name: 'Define operating system CentOS 7'
     theforeman.foreman.operatingsystem:
       name: 'CentOS'
       major: 7
@@ -73,7 +73,7 @@
     delegate_to: 'localhost'
 
 
-  - name: 'CentOS Stream 8 Operating System'
+  - name: 'Define operating system CentOS Stream 8'
     theforeman.foreman.operatingsystem:
       name: 'CentOS_Stream'
       major: 8
@@ -91,16 +91,16 @@
 
 
   # Create provisioning hostgroups
-  - name: 'Create Hostgroup: CentOS_7_GP'
+  - name: 'Define hostgroup CentOS_7_GP'
     theforeman.foreman.hostgroup:
       name: 'CentOS_7_GP'
       description: 'CentOS 7 - General Purpose'
       lifecycle_environment: 'Library'
       content_view: 'Default Organization View'
-      content_source: '{{ foreman_hostname }}'
+      content_source: '{{ inventory_hostname }}'
       environment: 'production'
-      puppet_proxy: '{{ foreman_hostname }}'
-      puppet_ca_proxy: '{{ foreman_hostname }}'
+      puppet_proxy: '{{ inventory_hostname }}'
+      puppet_ca_proxy: '{{ inventory_hostname }}'
       domain: 'tuxtech.com'
       subnet: '192.168.1.0'
       architecture: 'x86_64'
@@ -119,22 +119,23 @@
                   tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
                   jEGZeD15DdyewgaH83kJU9tWU/k3cx1l9SbHVwDoZrdXxKzgQhmE5KshAms8kcdtDfTkTLOpLd8kkNc3dh4wFs\
                   XAOwNy5zjeHpTxkYJr5b1MRBj7OdpdMrVNyP len@lenmbpr15.tuxtech.com"
-      locations: 'Default Location'
+      locations: 
+        - 'Default Location'
       organization: 'TuxTech'
       state: 'present'
     delegate_to: 'localhost'
 
 
-  - name: 'Create Hostgroup: CentOSStream_8_GP'
+  - name: 'Define hostgroup CentOSStream_8_GP'
     theforeman.foreman.hostgroup:
       name: 'CentOSStream_8_GP'
       description: 'CentOS Stream 8 - General Purpose'
       lifecycle_environment: 'Library'
       content_view: 'Default Organization View'
-      content_source: '{{ foreman_hostname }}'
+      content_source: '{{ inventory_hostname }}'
       environment: 'production'
-      puppet_proxy: '{{ foreman_hostname }}'
-      puppet_ca_proxy: '{{ foreman_hostname }}'
+      puppet_proxy: '{{ inventory_hostname }}'
+      puppet_ca_proxy: '{{ inventory_hostname }}'
       domain: 'tuxtech.com'
       subnet: '192.168.1.0'
       architecture: 'x86_64'
@@ -153,8 +154,24 @@
                   tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
                   jEGZeD15DdyewgaH83kJU9tWU/k3cx1l9SbHVwDoZrdXxKzgQhmE5KshAms8kcdtDfTkTLOpLd8kkNc3dh4wFs\
                   XAOwNy5zjeHpTxkYJr5b1MRBj7OdpdMrVNyP len@lenmbpr15.tuxtech.com"
-      locations: 'Default Location'
+      locations: 
+        - 'Default Location'
       organization: 'TuxTech'
+      state: 'present'
+    delegate_to: 'localhost'
+
+
+  - name: 'Define snippet template Kickstart default custom post'
+    # This is a built-in default to include if it exists
+    theforeman.foreman.provisioning_template:
+      name: 'Kickstart default custom post'
+      kind: 'snippet'
+      template: |-
+        eject -v
+      locations: 
+        - 'Default Location'
+      organizations: 
+        - 'TuxTech'
       state: 'present'
     delegate_to: 'localhost'
 
@@ -203,6 +220,11 @@
       server_url: 'https://{{ foreman_hostname }}'
       validate_certs: false
     theforeman.foreman.hostgroup:
+      username: '{{ foreman_username }}'
+      password: '{{ foreman_password }}'
+      server_url: 'https://{{ foreman_hostname }}'
+      validate_certs: false
+    theforeman.foreman.provisioning_template:
       username: '{{ foreman_username }}'
       password: '{{ foreman_password }}'
       server_url: 'https://{{ foreman_hostname }}'

@@ -1,7 +1,7 @@
 ---
-# Configuration for CentOSStream_8_GP host groups
+# Configuration for CentOSStream_8_GP hostgroups
 - block:
-  - name: 'Configure Enterprise Linux/CentOS 8 Base OS'
+  - name: 'Configure EL/CentOS 8 Base OS'
     include_tasks: 'el8_postprovision.yml'
 
   # Configure additional "General Purpose" requirements

@@ -1,34 +1,35 @@
 ---
 # tasks file for 10_provision_os
-# Configure OS for hostgroup
 - block:
-  - name: Toggle power (on) to start OS provisioning
+  - name: Power on vm to start OS provisioning
     community.vmware.vmware_guest_powerstate:
       name: '{{ inventory_hostname }}'
       state: 'powered-on'
     delegate_to: 'localhost'
 
 
-  # wait here until OS is built
-  - name: 'Wait 600 seconds for port 22 to become open and contain "OpenSSH"'
+  - name: 'Wait for operating system to be installed'
     wait_for:
-      # host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
       host: '{{ inventory_hostname }}'
       port: 22
       search_regex: 'OpenSSH'
       delay: 15
       sleep: 15
       timeout: 3600
-    # connection: 'local'
     delegate_to: 'localhost'
 
 
-  - name: 'do OS stuff'
+  - name: 'Configure hostgroup/os settings'
     include_tasks: '{{ hostgroup }}.yml'
 
   module_defaults:
     # Can this be external file for cleanliness?
     community.vmware.vmware_guest_powerstate:
+      hostname: '{{ vmware_hostname }}'
+      username: '{{ vmware_username }}'
+      password: '{{ vmware_password }}'
+      validate_certs: false
+    community.vmware.vmware_guest:
       hostname: '{{ vmware_hostname }}'
       username: '{{ vmware_username }}'
       password: '{{ vmware_password }}'
