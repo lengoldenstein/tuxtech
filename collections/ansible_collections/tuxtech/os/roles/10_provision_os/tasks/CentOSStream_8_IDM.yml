@@ -1,0 +1,9 @@
+---
+# Configuration for CentOSStream_8_IDM hostgroups
+- block:
+  - name: 'Configure EL/CentOS 8 Base OS'
+    include_tasks: 'el8_postprovision.yml'
+
+  # Configure additional "Identity Management" requirements
+  - name: 'Reboot'
+    ansible.builtin.reboot:

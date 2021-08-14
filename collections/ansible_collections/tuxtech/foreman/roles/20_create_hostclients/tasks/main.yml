@@ -10,7 +10,7 @@
     delegate_to: 'localhost'
 
 
-  - name: 'Register client to Foreman'
+  - name: 'Register host to Foreman'
     theforeman.foreman.host:
       name: '{{ inventory_hostname }}'
       hostgroup: '{{ hostgroup }}'
