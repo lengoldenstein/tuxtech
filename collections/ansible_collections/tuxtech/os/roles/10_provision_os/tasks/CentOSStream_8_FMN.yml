@@ -5,8 +5,6 @@
     include_tasks: 'el8_postprovision.yml'
 
   # Configure additional "Foreman/Satellite" requirements
-  # Remove puppet/facter
-
   - name: 'Remove default puppet package as Foreman installs its own'
     ansible.builtin.dnf:
       name:
@@ -14,7 +12,12 @@
       autoremove: true
       state: 'absent'
 
-  # rm -rf /etc/puppetlabs/puppet/ssl/
-  
+
+  - name: 'Remove stale puppet ssl certificates from provisioning'
+    ansible.builtin.file:
+      name: '/etc/puppetlabs/puppet/ssl/'
+      state: 'absent'
+
+
   - name: 'Reboot'
     ansible.builtin.reboot:

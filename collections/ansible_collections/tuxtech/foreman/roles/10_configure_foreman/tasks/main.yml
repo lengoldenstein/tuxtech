@@ -9,9 +9,6 @@
         - 'shim-x64'
       state: 'present'
 
-  # Setup bootdisk plugin
-  # Fight with boot image creation.  Install grub2-efi-x64.x86_64 shim-x64 && cp /boot/efi/EFI/redhat/grubx64.efi /boot/efi/EFI/redhat/shimx64.efi /var/lib/foreman/bootdisk
-  # OR point bootdisk configuration directory to /boot/efi/EFI/redhat
 
   - name: 'Define subnet 192.168.1.0/24'
     theforeman.foreman.subnet:
@@ -254,6 +251,34 @@
   # Setup hammer credentials
 
 
+  # - name: 'Configure bootdisk_grub2_dir for correct boot firmware images'
+  #   theforeman.foreman.setting:
+  #     name: 'bootdisk_grub2_dir'
+  #     value: '/boot/efi/EFI/centos/'
+  #   delegate_to: 'localhost'
+  
+  - name: 'Ensure /var/lib/foreman/bootdisk exists'
+    ansible.builtin.file:
+      path: '/var/lib/foreman/bootdisk'
+      owner: 'foreman'
+      group: 'foreman'
+      mode: '0755'
+      state: 'directory'
+
+
+  - name: 'Copy system boot firmware images to /var/lib/foreman/bootdisk'
+    ansible.builtin.copy:
+      src: '{{ item.src }}'
+      dest: '{{ item.dest }}'
+      owner: 'foreman'
+      group: 'foreman'
+      mode: '0644'
+      remote_src: true
+    loop:
+      - { 'src': '/boot/efi/EFI/centos/grubx64.efi', 'dest': '/var/lib/foreman/bootdisk/' }
+      - { 'src': '/boot/efi/EFI/centos/shimx64.efi', 'dest': '/var/lib/foreman/bootdisk/' }
+
+
   - name: 'Generate foreman boot ISO'
   # https://github.com/theforeman/foreman_bootdisk
   # https://github.com/theforeman/hammer_cli_foreman_bootdisk
@@ -300,6 +325,11 @@
       server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     theforeman.foreman.provisioning_template:
+      username: '{{ foreman_username }}'
+      password: '{{ foreman_password }}'
+      server_url: 'https://{{ inventory_hostname }}'
+      validate_certs: false
+    theforeman.foreman.setting:
       username: '{{ foreman_username }}'
       password: '{{ foreman_password }}'
       server_url: 'https://{{ inventory_hostname }}'
