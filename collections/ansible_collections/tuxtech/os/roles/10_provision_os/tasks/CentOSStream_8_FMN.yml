@@ -1,0 +1,20 @@
+---
+# Configuration for CentOSStream_8_FMN hostgroups
+- block:
+  - name: 'Configure EL/CentOS 8 Base OS'
+    include_tasks: 'el8_postprovision.yml'
+
+  # Configure additional "Foreman/Satellite" requirements
+  # Remove puppet/facter
+
+  - name: 'Remove default puppet package as Foreman installs its own'
+    ansible.builtin.dnf:
+      name:
+        - 'puppet'
+      autoremove: true
+      state: 'absent'
+
+  # rm -rf /etc/puppetlabs/puppet/ssl/
+  
+  - name: 'Reboot'
+    ansible.builtin.reboot:

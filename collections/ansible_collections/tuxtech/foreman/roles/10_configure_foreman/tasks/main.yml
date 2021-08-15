@@ -5,8 +5,13 @@
     ansible.builtin.dnf:
       name:
         - 'rubygem-hammer_cli_foreman_bootdisk'     # Hammer CLI plug-in for bootdisk
+        - 'grub2-efi-x64'
+        - 'shim-x64'
       state: 'present'
 
+  # Setup bootdisk plugin
+  # Fight with boot image creation.  Install grub2-efi-x64.x86_64 shim-x64 && cp /boot/efi/EFI/redhat/grubx64.efi /boot/efi/EFI/redhat/shimx64.efi /var/lib/foreman/bootdisk
+  # OR point bootdisk configuration directory to /boot/efi/EFI/redhat
 
   - name: 'Define subnet 192.168.1.0/24'
     theforeman.foreman.subnet:
@@ -110,9 +115,9 @@
     theforeman.foreman.hostgroup:
       name: 'CentOS_7_GP'
       description: 'CentOS 7 - General Purpose'
-      lifecycle_environment: 'Library'
-      content_view: 'Default Organization View'
-      content_source: '{{ inventory_hostname }}'
+      # lifecycle_environment: 'Library'
+      # content_view: 'Default Organization View'
+      # content_source: '{{ inventory_hostname }}'
       environment: 'production'
       puppet_proxy: '{{ inventory_hostname }}'
       puppet_ca_proxy: '{{ inventory_hostname }}'
@@ -145,9 +150,9 @@
     theforeman.foreman.hostgroup:
       name: 'CentOSStream_8_GP'
       description: 'CentOS Stream 8 - General Purpose'
-      lifecycle_environment: 'Library'
-      content_view: 'Default Organization View'
-      content_source: '{{ inventory_hostname }}'
+      # lifecycle_environment: 'Library'
+      # content_view: 'Default Organization View'
+      # content_source: '{{ inventory_hostname }}'
       environment: 'production'
       puppet_proxy: '{{ inventory_hostname }}'
       puppet_ca_proxy: '{{ inventory_hostname }}'
@@ -180,9 +185,44 @@
     theforeman.foreman.hostgroup:
       name: 'CentOSStream_8_IDM'
       description: 'CentOS Stream 8 - Identity Management'
-      lifecycle_environment: 'Library'
-      content_view: 'Default Organization View'
-      content_source: '{{ inventory_hostname }}'
+      # lifecycle_environment: 'Library'
+      # content_view: 'Default Organization View'
+      # content_source: '{{ inventory_hostname }}'
+      environment: 'production'
+      puppet_proxy: '{{ inventory_hostname }}'
+      puppet_ca_proxy: '{{ inventory_hostname }}'
+      domain: 'tuxtech.com'
+      subnet: '192.168.1.0'
+      architecture: 'x86_64'
+      operatingsystem: 'CentOS Stream 8'
+      medium: 'CentOS Stream'
+      ptable: 'Kickstart default - TuxTech'
+      pxe_loader: 'PXELinux BIOS'
+      root_pass: '{{ foreman_password }}'
+      parameters:
+        - name: 'pxe_kernel_options'
+          parameter_type: 'string'
+          value: 'net.ifnames=0 biosdevname=0'
+        - name: 'remote_execution_ssh_keys'
+          value: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa3aUqQU68g7DXPTPx3r7uLz1FGI+WYs062x3qmuICVT789Q\
+                  E++tWDKRO/Yg3EZwyKzEjFkDeASg8V5QkhkwVKqEmm7UCOreeEPbSLyr+NWGCeHhS7o2ZTfgROjgsBPdwFmYCq\
+                  tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
+                  jEGZeD15DdyewgaH83kJU9tWU/k3cx1l9SbHVwDoZrdXxKzgQhmE5KshAms8kcdtDfTkTLOpLd8kkNc3dh4wFs\
+                  XAOwNy5zjeHpTxkYJr5b1MRBj7OdpdMrVNyP len@lenmbpr15.tuxtech.com"
+      locations: 
+        - 'Default Location'
+      organization: 'TuxTech'
+      state: 'present'
+    delegate_to: 'localhost'
+
+
+  - name: 'Define hostgroup CentOSStream_8_FMN'
+    theforeman.foreman.hostgroup:
+      name: 'CentOSStream_8_FMN'
+      description: 'CentOS Stream 8 - Foreman/Satellite'
+      # lifecycle_environment: 'Library'
+      # content_view: 'Default Organization View'
+      # content_source: '{{ inventory_hostname }}'
       environment: 'production'
       puppet_proxy: '{{ inventory_hostname }}'
       puppet_ca_proxy: '{{ inventory_hostname }}'
@@ -242,27 +282,27 @@
     theforeman.foreman.subnet:
       username: '{{ foreman_username }}'
       password: '{{ foreman_password }}'
-      server_url: 'https://{{ foreman_hostname }}'
+      server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     theforeman.foreman.partition_table:
       username: '{{ foreman_username }}'
       password: '{{ foreman_password }}'
-      server_url: 'https://{{ foreman_hostname }}'
+      server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     theforeman.foreman.operatingsystem:
       username: '{{ foreman_username }}'
       password: '{{ foreman_password }}'
-      server_url: 'https://{{ foreman_hostname }}'
+      server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     theforeman.foreman.hostgroup:
       username: '{{ foreman_username }}'
       password: '{{ foreman_password }}'
-      server_url: 'https://{{ foreman_hostname }}'
+      server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     theforeman.foreman.provisioning_template:
       username: '{{ foreman_username }}'
       password: '{{ foreman_password }}'
-      server_url: 'https://{{ foreman_hostname }}'
+      server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     blockinfile:
       marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'
