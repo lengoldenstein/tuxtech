@@ -4,6 +4,11 @@
   - name: 'Configure EL/CentOS 8 Base OS'
     include_tasks: 'el8_postprovision.yml'
 
+
+  - name: 'Reboot'
+    ansible.builtin.reboot:
+
+
   # Configure additional "Foreman/Satellite" requirements
   - name: 'Remove default puppet package as Foreman installs its own'
     ansible.builtin.dnf:
@@ -11,13 +16,66 @@
         - 'puppet'
       autoremove: true
       state: 'absent'
+    # TODO create a control file here
 
 
   - name: 'Remove stale puppet ssl certificates from provisioning'
     ansible.builtin.file:
       name: '/etc/puppetlabs/puppet/ssl/'
       state: 'absent'
+    # TODO create a control file here
 
 
-  - name: 'Reboot'
-    ansible.builtin.reboot:
+  - name: 'Install required packages for Foreman'
+    ansible.builtin.dnf:
+      name: 
+        - 'https://yum.puppet.com/puppet6-release-el-8.noarch.rpm'
+        - 'https://yum.theforeman.org/releases/2.5/el8/x86_64/foreman-release.rpm'
+        - '@ruby:2.7'
+      disable_gpg_check: true
+      state: 'present'
+
+
+  - name: 'Prepare foreman-installer'
+    ansible.builtin.dnf:
+      name:
+        - 'foreman-installer'
+      disable_gpg_check: true
+      state: 'present'
+
+
+  - name: 'Install Foreman'
+    ansible.builtin.command:
+      argv:
+        - /usr/sbin/foreman-installer
+        - --foreman-initial-organization=TuxTech
+        - --enable-foreman-plugin-ansible
+        - --enable-foreman-plugin-setup
+        - --enable-foreman-plugin-templates
+        - --enable-foreman-plugin-bootdisk
+        - --enable-foreman-plugin-azure
+        - --enable-foreman-plugin-remote-execution
+        - --enable-foreman-plugin-remote-execution-cockpit
+        - --enable-foreman-plugin-snapshot-management
+        - --enable-foreman-plugin-tasks
+        - --enable-foreman-plugin-webhooks
+        - --enable-foreman-cli
+        - --enable-foreman-cli-ansible
+        - --enable-foreman-cli-azure
+        - --enable-foreman-cli-remote-execution
+        - --enable-foreman-proxy-plugin-ansible
+        - --enable-foreman-proxy-plugin-remote-execution-ssh
+        - --enable-foreman-compute-vmware
+        - --enable-foreman-compute-ec2
+        - --enable-foreman-compute-gce
+        - --enable-foreman-compute-openstack
+        - --enable-foreman-compute-libvirt
+        - --enable-foreman-compute-ovirt  
+        - --foreman-initial-admin-password={{ foreman_password }}
+      # creates: ''
+    no_log: true
+
+
+  - name: 'Configure settings for a Foreman/Satellite server'
+    ansible.builtin.include_role: 
+      name: 'tuxtech.foreman.10_configure_foreman'
