@@ -8,6 +8,10 @@
   - name: 'Reboot'
     ansible.builtin.reboot:
 
+  
+  - name: 'Gather installed packages info'
+    ansible.builtin.package_facts:
+
 
   # Configure additional "Foreman/Satellite" requirements
   - name: 'Remove default puppet package as Foreman installs its own'
@@ -16,14 +20,14 @@
         - 'puppet'
       autoremove: true
       state: 'absent'
-    # TODO create a control file here
+    when: '"foreman-release" not in ansible_facts.packages'
 
 
-  - name: 'Remove stale puppet ssl certificates from provisioning'
+  - name: 'Remove default provisioned puppet ssl certificates'
     ansible.builtin.file:
       name: '/etc/puppetlabs/puppet/ssl/'
       state: 'absent'
-    # TODO create a control file here
+    when: '"foreman-release" not in ansible_facts.packages'
 
 
   - name: 'Install required packages for Foreman'
@@ -72,7 +76,6 @@
         - --enable-foreman-compute-libvirt
         - --enable-foreman-compute-ovirt  
         - --foreman-initial-admin-password={{ foreman_password }}
-      # creates: ''
     no_log: true
 
 

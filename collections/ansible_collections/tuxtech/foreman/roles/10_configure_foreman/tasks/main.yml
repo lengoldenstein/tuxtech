@@ -34,6 +34,7 @@
     delegate_to: 'localhost'
 
 
+  # Define Partition Tables
   - name: 'Define partition table TuxTech'
     theforeman.foreman.partition_table:
       name: 'Kickstart default - TuxTech'
@@ -58,8 +59,62 @@
     delegate_to: 'localhost'
 
 
+  # Define Templates
+  - name: 'Define template Kickstart default iPXE - TuxTech'
+    theforeman.foreman.provisioning_template:
+      name: 'Kickstart default iPXE - TuxTech'
+      kind: 'iPXE'
+      template: |-
+        #!gpxe
+        <%#
+        kind: iPXE
+        name: Kickstart default iPXE
+        model: ProvisioningTemplate
+        oses:
+        - AlmaLinux
+        - CentOS
+        - Fedora
+        - RedHat
+        - Rocky
+        %>
+        <%
+          pxe_kernel_options = @host.params['pxe_kernel_options'] 
+          iface = @host.provision_interface
+          subnet4 = iface.subnet
+          subnet6 = iface.subnet6
+
+          if subnet4 && !subnet4.dhcp_boot_mode?
+            ks = foreman_url('provision', static: '1')
+          elsif subnet6 && !subnet6.dhcp_boot_mode?
+            ks = foreman_url('provision', static6: '1')
+          else
+            ks = foreman_url('provision')
+          end
+        -%>
+
+        echo Trying to ping Gateway: ${netX/gateway}
+        ping --count 1 ${netX/gateway} || echo Ping to Gateway failed or ping command not available.
+        echo Trying to ping DNS: ${netX/dns}
+        ping --count 1 ${netX/dns} || echo Ping to DNS failed or ping command not available.
+
+        kernel <%= "#{@host.url_for_boot(:kernel)}" %> initrd=initrd.img ks=<%= ks %> <%= pxe_kernel_options %> <%= snippet("kickstart_kernel_options", variables: {ipxe_net: true}).strip %>
+        initrd <%= "#{@host.url_for_boot(:initrd)}" %>
+        imgstat
+        sleep 2
+        boot
+      operatingsystems: 
+        # - 'CentOS 7'
+        # - 'CentOS_Stream 8'
+      locations: 
+        - 'Default Location'
+      organizations: 
+        - 'TuxTech'
+      state: 'present'
+    delegate_to: 'localhost'
+
+
   - name: 'Define snippet template Kickstart default custom post'
-    # This is a built-in default to include if it exists
+    # This is a built-in default to include, if it exists
     theforeman.foreman.provisioning_template:
       name: 'Kickstart default custom post'
       kind: 'snippet'
@@ -71,6 +126,7 @@
         - 'TuxTech'
       state: 'present'
     delegate_to: 'localhost'
+
 
   # Define Operating Systems
   - name: 'Define operating system CentOS 7'
@@ -88,7 +144,7 @@
       media:
         - 'CentOS 7 mirror'
       provisioning_templates:
-        - 'Kickstart default iPXE'
+        - 'Kickstart default iPXE - TuxTech'
         - 'Kickstart default'
         - 'Kickstart default finish'
         - 'Kickstart default user data'
@@ -111,7 +167,7 @@
       media:
         - 'CentOS Stream'
       provisioning_templates:
-        - 'Kickstart default iPXE'
+        - 'Kickstart default iPXE - TuxTech'
         - 'Kickstart default'
         - 'Kickstart default finish'
         - 'Kickstart default user data'
@@ -119,18 +175,18 @@
     delegate_to: 'localhost'
 
 
-  - name: 'os defaults templates'
+  - name: 'Define operating system provisioning template associations'
     theforeman.foreman.os_default_template:
       operatingsystem: '{{ item.os }}'
       provisioning_template: '{{ item.tmpl }}'
       template_kind: '{{ item.kind }}'
       state: 'present'
     loop:
-      - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default iPXE', 'kind': 'iPXE' }
+      - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default iPXE - TuxTech', 'kind': 'iPXE' }
       - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default', 'kind': 'provision' }
       - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default finish', 'kind': 'finish' }
       - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default user data', 'kind': 'user_data' }
-      - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default iPXE', 'kind': 'iPXE' }
+      - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default iPXE - TuxTech', 'kind': 'iPXE' }
       - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default', 'kind': 'provision' }
       - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default finish', 'kind': 'finish' }
       - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default user data', 'kind': 'user_data' }
@@ -279,13 +335,7 @@
 
   # Setup hammer credentials
 
-
-  # - name: 'Configure bootdisk_grub2_dir for correct boot firmware images'
-  #   theforeman.foreman.setting:
-  #     name: 'bootdisk_grub2_dir'
-  #     value: '/boot/efi/EFI/centos/'
-  #   delegate_to: 'localhost'
-  
+  # Foreman bootdisk configuration
   - name: 'Ensure /var/lib/foreman/bootdisk exists'
     ansible.builtin.file:
       path: '/var/lib/foreman/bootdisk'
