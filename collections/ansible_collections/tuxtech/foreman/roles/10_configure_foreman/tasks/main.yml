@@ -360,9 +360,9 @@
 
 
   - name: 'Generate foreman boot ISO'
-  # https://github.com/theforeman/foreman_bootdisk
-  # https://github.com/theforeman/hammer_cli_foreman_bootdisk
-  #  foreman-rake bootdisk:generate:generic OUTPUT=/tmp/foreman.iso
+    # https://github.com/theforeman/foreman_bootdisk
+    # https://github.com/theforeman/hammer_cli_foreman_bootdisk
+    #  foreman-rake bootdisk:generate:generic OUTPUT=/tmp/foreman.iso
     ansible.builtin.command:
       cmd: '/usr/sbin/foreman-rake bootdisk:generate:generic OUTPUT=/tmp/bootdisk_{{ inventory_hostname }}.iso'
       # cmd: '/usr/bin/hammer bootdisk generic'
