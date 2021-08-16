@@ -72,7 +72,7 @@
       state: 'present'
     delegate_to: 'localhost'
 
-
+  # Define Operating Systems
   - name: 'Define operating system CentOS 7'
     theforeman.foreman.operatingsystem:
       name: 'CentOS'
@@ -87,6 +87,12 @@
         - 'Kickstart default - TuxTech'
       media:
         - 'CentOS 7 mirror'
+      provisioning_templates:
+        - 'Kickstart default iPXE'
+        - 'Kickstart default'
+        - 'Kickstart default finish'
+        - 'Kickstart default user data'
+        - 'Linux host_init_config default'
     delegate_to: 'localhost'
 
 
@@ -104,7 +110,30 @@
         - 'Kickstart default - TuxTech'
       media:
         - 'CentOS Stream'
+      provisioning_templates:
+        - 'Kickstart default iPXE'
+        - 'Kickstart default'
+        - 'Kickstart default finish'
+        - 'Kickstart default user data'
+        - 'Linux host_init_config default'
     delegate_to: 'localhost'
+
+
+  - name: 'os defaults templates'
+    theforeman.foreman.os_default_template:
+      operatingsystem: '{{ item.os }}'
+      provisioning_template: '{{ item.tmpl }}'
+      template_kind: '{{ item.kind }}'
+      state: 'present'
+    loop:
+      - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default iPXE', 'kind': 'iPXE' }
+      - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default', 'kind': 'provision' }
+      - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default finish', 'kind': 'finish' }
+      - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default user data', 'kind': 'user_data' }
+      - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default iPXE', 'kind': 'iPXE' }
+      - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default', 'kind': 'provision' }
+      - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default finish', 'kind': 'finish' }
+      - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default user data', 'kind': 'user_data' }
 
 
   # Create provisioning hostgroups
@@ -330,6 +359,11 @@
       server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     theforeman.foreman.setting:
+      username: '{{ foreman_username }}'
+      password: '{{ foreman_password }}'
+      server_url: 'https://{{ inventory_hostname }}'
+      validate_certs: false
+    theforeman.foreman.os_default_template:
       username: '{{ foreman_username }}'
       password: '{{ foreman_password }}'
       server_url: 'https://{{ inventory_hostname }}'

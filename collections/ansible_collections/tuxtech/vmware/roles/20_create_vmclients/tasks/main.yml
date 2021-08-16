@@ -39,10 +39,10 @@
     delegate_to: 'localhost'
 
 
-  - name: 'Set VM BIOS Boot wait time to 4000ms'
+  - name: 'Set VM BIOS Boot wait time to 3000ms'
     community.vmware.vmware_guest_boot_manager:
       name: '{{ inventory_hostname }}'
-      boot_delay: 4000
+      boot_delay: 3000
       boot_order:
         - 'floppy'
         - 'cdrom'
