@@ -61,6 +61,7 @@
 
   # Define Templates
   - name: 'Define template Kickstart default iPXE - TuxTech'
+    # Corrects pxe_kernel_options values getting passed through
     theforeman.foreman.provisioning_template:
       name: 'Kickstart default iPXE - TuxTech'
       kind: 'iPXE'
@@ -78,7 +79,7 @@
         - Rocky
         %>
         <%
-          pxe_kernel_options = @host.params['pxe_kernel_options'] 
+          pxe_kernel_options = @host.params['pxe_kernel_options']
           iface = @host.provision_interface
           subnet4 = iface.subnet
           subnet6 = iface.subnet6
@@ -102,12 +103,12 @@
         imgstat
         sleep 2
         boot
-      operatingsystems: 
+      operatingsystems:
         # - 'CentOS 7'
         # - 'CentOS_Stream 8'
-      locations: 
+      locations:
         - 'Default Location'
-      organizations: 
+      organizations:
         - 'TuxTech'
       state: 'present'
     delegate_to: 'localhost'
@@ -120,9 +121,9 @@
       kind: 'snippet'
       template: |-
         eject -v
-      locations: 
+      locations:
         - 'Default Location'
-      organizations: 
+      organizations:
         - 'TuxTech'
       state: 'present'
     delegate_to: 'localhost'
@@ -182,14 +183,14 @@
       template_kind: '{{ item.kind }}'
       state: 'present'
     loop:
-      - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default iPXE - TuxTech', 'kind': 'iPXE' }
-      - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default', 'kind': 'provision' }
-      - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default finish', 'kind': 'finish' }
-      - { 'os': 'CentOS 7', 'tmpl': 'Kickstart default user data', 'kind': 'user_data' }
-      - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default iPXE - TuxTech', 'kind': 'iPXE' }
-      - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default', 'kind': 'provision' }
-      - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default finish', 'kind': 'finish' }
-      - { 'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default user data', 'kind': 'user_data' }
+      - {'os': 'CentOS 7', 'tmpl': 'Kickstart default iPXE - TuxTech', 'kind': 'iPXE'}
+      - {'os': 'CentOS 7', 'tmpl': 'Kickstart default', 'kind': 'provision'}
+      - {'os': 'CentOS 7', 'tmpl': 'Kickstart default finish', 'kind': 'finish'}
+      - {'os': 'CentOS 7', 'tmpl': 'Kickstart default user data', 'kind': 'user_data'}
+      - {'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default iPXE - TuxTech', 'kind': 'iPXE'}
+      - {'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default', 'kind': 'provision'}
+      - {'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default finish', 'kind': 'finish'}
+      - {'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default user data', 'kind': 'user_data'}
 
 
   # Create provisioning hostgroups
@@ -221,7 +222,7 @@
                   tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
                   jEGZeD15DdyewgaH83kJU9tWU/k3cx1l9SbHVwDoZrdXxKzgQhmE5KshAms8kcdtDfTkTLOpLd8kkNc3dh4wFs\
                   XAOwNy5zjeHpTxkYJr5b1MRBj7OdpdMrVNyP len@lenmbpr15.tuxtech.com"
-      locations: 
+      locations:
         - 'Default Location'
       organization: 'TuxTech'
       state: 'present'
@@ -256,7 +257,7 @@
                   tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
                   jEGZeD15DdyewgaH83kJU9tWU/k3cx1l9SbHVwDoZrdXxKzgQhmE5KshAms8kcdtDfTkTLOpLd8kkNc3dh4wFs\
                   XAOwNy5zjeHpTxkYJr5b1MRBj7OdpdMrVNyP len@lenmbpr15.tuxtech.com"
-      locations: 
+      locations:
         - 'Default Location'
       organization: 'TuxTech'
       state: 'present'
@@ -291,7 +292,7 @@
                   tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
                   jEGZeD15DdyewgaH83kJU9tWU/k3cx1l9SbHVwDoZrdXxKzgQhmE5KshAms8kcdtDfTkTLOpLd8kkNc3dh4wFs\
                   XAOwNy5zjeHpTxkYJr5b1MRBj7OdpdMrVNyP len@lenmbpr15.tuxtech.com"
-      locations: 
+      locations:
         - 'Default Location'
       organization: 'TuxTech'
       state: 'present'
@@ -326,7 +327,7 @@
                   tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
                   jEGZeD15DdyewgaH83kJU9tWU/k3cx1l9SbHVwDoZrdXxKzgQhmE5KshAms8kcdtDfTkTLOpLd8kkNc3dh4wFs\
                   XAOwNy5zjeHpTxkYJr5b1MRBj7OdpdMrVNyP len@lenmbpr15.tuxtech.com"
-      locations: 
+      locations:
         - 'Default Location'
       organization: 'TuxTech'
       state: 'present'
@@ -354,8 +355,8 @@
       mode: '0644'
       remote_src: true
     loop:
-      - { 'src': '/boot/efi/EFI/centos/grubx64.efi', 'dest': '/var/lib/foreman/bootdisk/' }
-      - { 'src': '/boot/efi/EFI/centos/shimx64.efi', 'dest': '/var/lib/foreman/bootdisk/' }
+      - {'src': '/boot/efi/EFI/centos/grubx64.efi', 'dest': '/var/lib/foreman/bootdisk/'}
+      - {'src': '/boot/efi/EFI/centos/shimx64.efi', 'dest': '/var/lib/foreman/bootdisk/'}
 
 
   - name: 'Generate foreman boot ISO'

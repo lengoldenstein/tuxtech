@@ -5,10 +5,10 @@
     include_tasks: 'el8_postprovision.yml'
 
 
-  - name: 'Reboot'
-    ansible.builtin.reboot:
+  # - name: 'Reboot'
+  #   ansible.builtin.reboot:
 
-  
+
   - name: 'Gather installed packages info'
     ansible.builtin.package_facts:
 
@@ -32,7 +32,7 @@
 
   - name: 'Install required packages for Foreman'
     ansible.builtin.dnf:
-      name: 
+      name:
         - 'https://yum.puppet.com/puppet6-release-el-8.noarch.rpm'
         - 'https://yum.theforeman.org/releases/2.5/el8/x86_64/foreman-release.rpm'
         - '@ruby:2.7'
@@ -74,11 +74,11 @@
         - --enable-foreman-compute-gce
         - --enable-foreman-compute-openstack
         - --enable-foreman-compute-libvirt
-        - --enable-foreman-compute-ovirt  
+        - --enable-foreman-compute-ovirt
         - --foreman-initial-admin-password={{ foreman_password }}
     no_log: true
 
 
   - name: 'Configure settings for a Foreman/Satellite server'
-    ansible.builtin.include_role: 
+    ansible.builtin.include_role:
       name: 'tuxtech.foreman.10_configure_foreman'
