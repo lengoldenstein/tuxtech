@@ -19,8 +19,17 @@
     delegate_to: 'localhost'
 
 
+  - name: 'Remove Foreman boot CD-ROM'
+    community.vmware.vmware_guest:
+      name: '{{ inventory_hostname }}'
+      cdrom:
+        type: 'none'
+    delegate_to: 'localhost'
+
+
   - name: 'Configure hostgroup/os settings'
     include_tasks: '{{ hostgroup }}.yml'
+
 
   module_defaults:
     # Can this be external file for cleanliness?
