@@ -334,6 +334,40 @@
     delegate_to: 'localhost'
 
 
+  - name: 'Define hostgroup CentOSStream_8_WEB'
+    theforeman.foreman.hostgroup:
+      name: 'CentOSStream_8_WEB'
+      description: 'CentOS Stream 8 - Web Server'
+      # lifecycle_environment: 'Library'
+      # content_view: 'Default Organization View'
+      # content_source: '{{ inventory_hostname }}'
+      environment: 'production'
+      puppet_proxy: '{{ inventory_hostname }}'
+      puppet_ca_proxy: '{{ inventory_hostname }}'
+      domain: 'tuxtech.com'
+      subnet: '192.168.1.0'
+      architecture: 'x86_64'
+      operatingsystem: 'CentOS Stream 8'
+      medium: 'CentOS Stream'
+      ptable: 'Kickstart default - TuxTech'
+      pxe_loader: 'PXELinux BIOS'
+      root_pass: '{{ foreman_password }}'
+      parameters:
+        - name: 'pxe_kernel_options'
+          parameter_type: 'string'
+          value: 'net.ifnames=0 biosdevname=0'
+        - name: 'remote_execution_ssh_keys'
+          value: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa3aUqQU68g7DXPTPx3r7uLz1FGI+WYs062x3qmuICVT789Q\
+                  E++tWDKRO/Yg3EZwyKzEjFkDeASg8V5QkhkwVKqEmm7UCOreeEPbSLyr+NWGCeHhS7o2ZTfgROjgsBPdwFmYCq\
+                  tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
+                  jEGZeD15DdyewgaH83kJU9tWU/k3cx1l9SbHVwDoZrdXxKzgQhmE5KshAms8kcdtDfTkTLOpLd8kkNc3dh4wFs\
+                  XAOwNy5zjeHpTxkYJr5b1MRBj7OdpdMrVNyP len@lenmbpr15.tuxtech.com"
+      locations:
+        - 'Default Location'
+      organization: 'TuxTech'
+      state: 'present'
+    delegate_to: 'localhost'
+
   # Setup hammer credentials
 
   # Foreman bootdisk configuration

@@ -1,0 +1,34 @@
+---
+# Configuration for CentOSStream_8_Web hostgroups
+- block:
+  - name: 'Configure EL/CentOS 8 Base OS'
+    include_tasks: 'el8_postprovision.yml'
+
+  # # Configure additional "Web Server" requirements
+  # - name: 'Reboot'
+  #   ansible.builtin.reboot:
+
+
+- name: 'Install required packages for WEB'
+  ansible.builtin.dnf:
+    name:
+      - '@httpd:2.4/common'
+      - '@php:7.2/common'
+
+
+- name: 'Content configuration for WEB'
+  ansible.builtin.template:
+    src: 'CentOSStream_8_WEB/index.php.j2'
+    dest: '/var/www/html/index.php'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+
+- name: 'Servies Config for WEB'
+  ansible.builtin.service:
+    name: '{{ item.name }}'
+    state: '{{ item.state }}'
+    enabled: '{{ item.enabled }}'
+  loop:
+    - {name: 'httpd', state: 'started', enabled: true}

@@ -14,6 +14,10 @@ sdb_gb=80
 idm1.tuxtech.com        ipaddr=192.168.1.201    hostgroup='CentOSStream_8_IDM'
 idm2.tuxtech.com        ipaddr=192.168.1.202    hostgroup='CentOSStream_8_IDM'
 
+[web]
+web1.tuxtech.com        ipaddr=192.168.1.219    hostgroup='CentOSStream_8_WEB'
+web2.tuxtech.com        ipaddr=192.168.1.220    hostgroup='CentOSStream_8_WEB'
+
 [clients]
 centos7-1.tuxtech.com   ipaddr='192.168.1.217'  hostgroup='CentOS_7_GP'
 centos7-2.tuxtech.com   ipaddr='192.168.1.218'  hostgroup='CentOS_7_GP'

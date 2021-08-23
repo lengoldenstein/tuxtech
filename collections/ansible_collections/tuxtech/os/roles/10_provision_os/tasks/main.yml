@@ -13,7 +13,7 @@
       host: '{{ inventory_hostname }}'
       port: 22
       search_regex: 'OpenSSH'
-      delay: 15
+      delay: 5
       sleep: 15
       timeout: 3600
     delegate_to: 'localhost'
@@ -25,6 +25,10 @@
       cdrom:
         type: 'none'
     delegate_to: 'localhost'
+
+
+  - name: 'Gather facts for ansible variables'
+    ansible.builtin.setup:
 
 
   - name: 'Configure hostgroup/os settings'

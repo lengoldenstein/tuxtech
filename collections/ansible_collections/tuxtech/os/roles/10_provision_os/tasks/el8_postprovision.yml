@@ -15,7 +15,7 @@
   ansible.builtin.dnf:
     name:
       - 'vim'
-      - 'httpd'
+      # - 'httpd'
       # - 'nfs-utils'
       - 'postfix'
       # - 'samba'
@@ -37,7 +37,7 @@
     - {name: 'crond', state: 'started', enabled: true}
     - {name: 'dbus', state: 'started', enabled: true}
     - {name: 'firewalld', state: 'stopped', enabled: false}
-    - {name: 'httpd', state: 'started', enabled: true}
+    # - {name: 'httpd', state: 'started', enabled: true}
     # - { name: 'libstoragemgmt',   state: 'stopped',   enabled: false }
     # - { name: 'mcelog',           state: 'stopped',   enabled: false }
     # - { name: 'mysqld',           state: 'started',   enabled: true }
@@ -55,22 +55,22 @@
     - {name: 'vmtoolsd', state: 'started', enabled: true}
 
 
-- name: 'Create UserIDs'
-  ansible.builtin.user:
-    name: 'len'
-    comment: 'Len Goldenstein'
-    groups: 'wheel'
+# - name: 'Create UserIDs'
+#   ansible.builtin.user:
+#     name: 'len'
+#     comment: 'Len Goldenstein'
+#     groups: 'wheel'
 
 
-- name: 'Configure /etc/sudoers'
-  ansible.builtin.lineinfile:
-    path: '/etc/sudoers'
-    state: 'present'
-    regexp: '{{ item.regexp }}'
-    line: '{{ item.line }}'
-  loop:
-    - {regexp: '\%wheel\s+ALL=\(ALL\)\s+ALL$', line: '#%wheel  ALL=(ALL)       ALL'}
-    - {regexp: '\%wheel\s+ALL=\(ALL\)\s+NOPASSWD\:\sALL$', line: '%wheel        ALL=(ALL)       NOPASSWD: ALL'}
+# - name: 'Configure /etc/sudoers'
+#   ansible.builtin.lineinfile:
+#     path: '/etc/sudoers'
+#     state: 'present'
+#     regexp: '{{ item.regexp }}'
+#     line: '{{ item.line }}'
+#   loop:
+#     - {regexp: '\%wheel\s+ALL=\(ALL\)\s+ALL$', line: '#%wheel  ALL=(ALL)       ALL'}
+#     - {regexp: '\%wheel\s+ALL=\(ALL\)\s+NOPASSWD\:\sALL$', line: '%wheel        ALL=(ALL)       NOPASSWD: ALL'}
 
 
 - name: 'Configure grub'

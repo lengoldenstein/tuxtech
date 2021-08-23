@@ -1,9 +1,121 @@
 ---
 # Configuration for CentOSStream_8_IDM hostgroups
 - block:
-  - name: 'Configure EL/CentOS 8 Base OS'
-    include_tasks: 'el8_postprovision.yml'
+  # - name: 'Configure EL/CentOS 8 Base OS'
+  #   include_tasks: 'el8_postprovision.yml'
 
   # Configure additional "Identity Management" requirements
-  - name: 'Reboot'
-    ansible.builtin.reboot:
+  # - name: 'Reboot'
+  #   ansible.builtin.reboot:
+
+  - name: 'Install required packages for IDM'
+    ansible.builtin.dnf:
+      name:
+        - '@idm:DL1/dns'
+
+
+# Validate ntpd
+
+#### INSTALL IDM AS PRIMARY OR REPLICA
+  - name: 'Install IDM Server'
+    ansible.builtin.command:
+      argv:
+        - /usr/sbin/ipa-server-install
+        - --setup-dns
+        - --realm=TUXTECH.COM
+        - --domain=tuxtech.com
+        - --ds-password={{ idm_password }}
+        - --admin-password={{ idm_password }}
+        - --forwarder=192.168.1.6
+        - --forwarder=192.168.1.1
+        - --no-reverse
+        - --allow-zone-overlap
+        - --mkhomedir
+        - --unattended
+    no_log: true
+
+
+  - name: 'Configure IDM server'
+    community.general.ipa_config:
+      ipadefaultloginshell: '/bin/bash'
+      ipahomesrootdir: '/home/tuxtech.com/'
+
+
+  - name: 'Configure IDM Users'
+    community.general.ipa_user:
+      name: 'len'
+      givenname: 'Len'
+      sn: 'Goldenstein'
+      password: '{{ idm_password }}'
+      sshpubkey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa3aUqQU68g7DXPTPx3r7uLz1FGI+WYs062x3qmuICVT789Q\
+        E++tWDKRO/Yg3EZwyKzEjFkDeASg8V5QkhkwVKqEmm7UCOreeEPbSLyr+NWGCeHhS7o2ZTfgROjgsBPdwFmYCq\
+        tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
+        jEGZeD15DdyewgaH83kJU9tWU/k3cx1l9SbHVwDoZrdXxKzgQhmE5KshAms8kcdtDfTkTLOpLd8kkNc3dh4wFs\
+        XAOwNy5zjeHpTxkYJr5b1MRBj7OdpdMrVNyP len@lenmbpr15.tuxtech.com"
+      update_password: 'on_create'
+      state: 'present'
+
+
+  - name: 'Configure IDM Groups'
+    community.general.ipa_group:
+      name: 'admins'
+      user:
+        - 'admin'
+        - 'len'
+      state: 'present'
+
+
+  - name: 'Configure IDM HBAC Rules'
+    community.general.ipa_hbacrule:
+      name: 'admins_allow_all'
+      description: 'hbac rule'
+      usergroup: 'admins'
+      hostcategory: 'all'
+      servicecategory: 'all'
+      state: 'present'
+
+
+  - name: 'Disable default HBAC rule: allow_all'
+    community.general.ipa_hbacrule:
+      name: 'allow_all'
+      state: 'disabled'
+
+
+  - name: 'Configure IDM sudo Rules'
+    community.general.ipa_sudorule:
+      name: 'admins_allow_all'
+      description: 'admins rule'
+      usergroup: 'admins'
+      hostcategory: 'all'
+      cmdcategory: 'all'
+      sudoopt:
+        - '!authenticate'
+      state: 'present'
+
+
+  module_defaults:
+    community.general.ipa_config:
+      ipa_host: '{{ inventory_hostname }}'
+      ipa_user: '{{ idm_username }}'
+      ipa_pass: '{{ idm_password }}'
+      validate_certs: false
+    community.general.ipa_user:
+      ipa_host: '{{ inventory_hostname }}'
+      ipa_user: '{{ idm_username }}'
+      ipa_pass: '{{ idm_password }}'
+      validate_certs: false
+    community.general.ipa_group:
+      ipa_host: '{{ inventory_hostname }}'
+      ipa_user: '{{ idm_username }}'
+      ipa_pass: '{{ idm_password }}'
+      validate_certs: false
+    community.general.ipa_hbacrule:
+      ipa_host: '{{ inventory_hostname }}'
+      ipa_user: '{{ idm_username }}'
+      ipa_pass: '{{ idm_password }}'
+      validate_certs: false
+    community.general.ipa_sudorule:
+      ipa_host: '{{ inventory_hostname }}'
+      ipa_user: '{{ idm_username }}'
+      ipa_pass: '{{ idm_password }}'
+      validate_certs: false
