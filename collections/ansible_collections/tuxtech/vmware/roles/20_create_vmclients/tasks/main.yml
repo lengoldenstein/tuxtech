@@ -14,7 +14,7 @@
       hardware:
         num_cpus: '{{ num_cpus | default(2) }}'
         num_cpu_cores_per_socket: 1
-        memory_mb: '{{ memory_mb | default(2048) }}'
+        memory_mb: '{{ memory_mb | default(2560) }}'
         scsi: 'paravirtual'
         boot_firmware: 'bios'
         version: 13

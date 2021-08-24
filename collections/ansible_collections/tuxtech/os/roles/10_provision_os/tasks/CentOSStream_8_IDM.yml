@@ -1,8 +1,8 @@
 ---
 # Configuration for CentOSStream_8_IDM hostgroups
 - block:
-  # - name: 'Configure EL/CentOS 8 Base OS'
-  #   include_tasks: 'el8_postprovision.yml'
+  - name: 'Configure EL/CentOS 8 Base OS'
+    include_tasks: 'el8_postprovision.yml'
 
   # Configure additional "Identity Management" requirements
   # - name: 'Reboot'
@@ -32,6 +32,7 @@
         - --allow-zone-overlap
         - --mkhomedir
         - --unattended
+    ignore_errors: true
     no_log: true
 
 
@@ -91,7 +92,6 @@
       sudoopt:
         - '!authenticate'
       state: 'present'
-
 
   module_defaults:
     community.general.ipa_config:
