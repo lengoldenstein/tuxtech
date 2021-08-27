@@ -1,0 +1,19 @@
+---
+# tasks file for 99_delete_os
+- block:
+    - name: 'Remove client from IDM server'
+      community.general.ipa_host:
+        name: '{{ inventory_hostname }}'
+        update_dns: true
+        state: 'absent'
+      delegate_to: 'localhost'
+
+  module_defaults:
+    # Can this be external file for cleanliness?
+    community.general.ipa_host:
+      ipa_host: '{{ idm_hostname }}'
+      ipa_user: '{{ idm_username }}'
+      ipa_pass: '{{ idm_password }}'
+      validate_certs: false
+    blockinfile:
+      marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'

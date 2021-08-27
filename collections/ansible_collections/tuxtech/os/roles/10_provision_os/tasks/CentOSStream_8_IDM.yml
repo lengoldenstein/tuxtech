@@ -3,12 +3,13 @@
 - block:
   - name: 'Configure EL/CentOS 8 Base OS'
     include_tasks: 'el8_postprovision.yml'
+    tags: 'baseos'
 
   # Configure additional "Identity Management" requirements
   # - name: 'Reboot'
   #   ansible.builtin.reboot:
 
-  - name: 'Install required packages for IDM'
+  - name: 'Install required packages for IDM server with integrated DNS'
     ansible.builtin.dnf:
       name:
         - '@idm:DL1/dns'
@@ -17,29 +18,52 @@
 # Validate ntpd
 
 #### INSTALL IDM AS PRIMARY OR REPLICA
-  - name: 'Install IDM Server'
+  - name: 'Install IDM Server Primary'
     ansible.builtin.command:
       argv:
         - /usr/sbin/ipa-server-install
         - --setup-dns
-        - --realm=TUXTECH.COM
-        - --domain=tuxtech.com
+        - --domain=idm.tuxtech.com
+        - --realm=IDM.TUXTECH.COM
         - --ds-password={{ idm_password }}
         - --admin-password={{ idm_password }}
         - --forwarder=192.168.1.6
-        - --forwarder=192.168.1.1
         - --no-reverse
         - --allow-zone-overlap
         - --mkhomedir
         - --unattended
     ignore_errors: true
     no_log: true
+    when:
+      - inventory_hostname == 'idm1.tuxtech.com'
+
+
+  - name: 'Install IDM Server Replica'
+    ansible.builtin.command:
+      argv:
+        - /usr/sbin/ipa-replica-install
+        - --setup-dns
+        - --setup-ca
+        # - --server=idm1.tuxtech.com
+        - --domain=idm.tuxtech.com
+        - --realm=IDM.TUXTECH.COM
+        - --principal={{ idm_username }}
+        - --admin-password={{ idm_password }}
+        - --forwarder=192.168.1.6
+        - --no-reverse
+        - --allow-zone-overlap
+        - --mkhomedir
+        - --unattended
+    ignore_errors: true
+    no_log: true
+    when:
+      - inventory_hostname != 'idm1.tuxtech.com'
 
 
   - name: 'Configure IDM server'
     community.general.ipa_config:
       ipadefaultloginshell: '/bin/bash'
-      ipahomesrootdir: '/home/tuxtech.com/'
+      ipahomesrootdir: '/home/idm.tuxtech.com/'
 
 
   - name: 'Configure IDM Users'

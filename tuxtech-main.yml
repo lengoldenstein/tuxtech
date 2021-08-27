@@ -81,11 +81,18 @@
   vars_files:
     - 'tuxtech-configuration.yml'
   roles:
-    - 'tuxtech.os.10_provision_os'
+    - role: 'tuxtech.os.10_provision_os'
       # Provision and configure the operating system
       # - inventory host must have matching Foreman/Satellite hostgroup defined
       # ansible-playbook tuxtech-main.yml --tags os_10 --limit idm1.tuxtech.com
-  tags:
-    - 'os_10'
-    - 'provision'
+      tags:
+        - 'os_10'
+        - 'provision'
+    - role: 'tuxtech.os.99_delete_os'
+      # Provision and configure the operating system
+      # - inventory host must have matching Foreman/Satellite hostgroup defined
+      # ansible-playbook tuxtech-main.yml --tags os_10 --limit idm1.tuxtech.com
+      tags:
+        - 'os_99'
+        - 'delete'
 # Operating System section END
