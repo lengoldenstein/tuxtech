@@ -3,7 +3,14 @@
 - name: 'rebuild grub'
   ansible.builtin.command: '/usr/sbin/grub2-mkconfig -o /boot/grub2/grub.cfg'
 
+
 - name: 'restart postfix'
   ansible.builtin.service:
     name: 'postfix'
+    state: 'restarted'
+
+
+- name: 'restart httpd'
+  ansible.builtin.service:
+    name: 'httpd'
     state: 'restarted'

@@ -1,0 +1,14 @@
+<VirtualHost *:80>
+    ServerName lengoldenstein.com
+    ServerAlias *.lengoldenstein.com
+    ServerAdmin webmaster@lengoldenstein.com
+    DocumentRoot /var/www/lengoldenstein.com/html
+
+    <Directory /var/www/lengoldenstein.com/html>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+    </Directory>
+
+    ErrorLog /var/log/httpd/lengoldenstein.com-error.log
+    CustomLog /var/log/httpd/lengoldenstein.com-access.log combined
+</VirtualHost>

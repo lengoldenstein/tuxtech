@@ -4,31 +4,62 @@
   - name: 'Configure EL/CentOS 8 Base OS'
     include_tasks: 'el8_postprovision.yml'
 
-  # # Configure additional "Web Server" requirements
-  # - name: 'Reboot'
-  #   ansible.builtin.reboot:
+  # Configure additional "Web Server" requirements
+  - name: 'Reboot'
+    ansible.builtin.reboot:
 
 
-- name: 'Install required packages for WEB'
-  ansible.builtin.dnf:
-    name:
-      - '@httpd:2.4/common'
-      - '@php:7.2/common'
+  - name: 'Install required packages for WEB'
+    ansible.builtin.dnf:
+      name:
+        - '@httpd:2.4/common'
+        - '@php:7.2/common'
+    notify: 'restart httpd'
 
 
-- name: 'Content configuration for WEB'
-  ansible.builtin.template:
-    src: 'CentOSStream_8_WEB/index.php.j2'
-    dest: '/var/www/html/index.php'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
+  - name: 'Create web content directories'
+    ansible.builtin.file:
+      path: '{{ item.path }}'
+      recurse: true
+      state: 'directory'
+      owner: 'root'
+      group: 'root'
+      mode: '0755'
+    loop:
+      - {'path': '/var/www/tuxtech.com/html'}
+      - {'path': '/var/www/lengoldenstein.com/html'}
 
 
-- name: 'Servies Config for WEB'
-  ansible.builtin.service:
-    name: '{{ item.name }}'
-    state: '{{ item.state }}'
-    enabled: '{{ item.enabled }}'
-  loop:
-    - {name: 'httpd', state: 'started', enabled: true}
+  - name: 'Install apache virtual host configuration'
+    ansible.builtin.template:
+      src: 'CentOSStream_8_WEB/{{ item.src }}'
+      dest: '{{ item.dest }}'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+    loop:
+      - {'src': 'tuxtech.com.conf.j2', 'dest': '/etc/httpd/conf.d/tuxtech.com.conf'}
+      - {'src': 'lengoldenstein.com.conf.j2', 'dest': '/etc/httpd/conf.d/lengoldenstein.com.conf'}
+    notify: 'restart httpd'
+
+
+  # Install Web content
+  - name: 'Content configuration for WEB'
+    ansible.builtin.template:
+      src: 'CentOSStream_8_WEB/{{ item.src }}'
+      dest: '{{ item.dest }}'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+    loop:
+      - {'src': 'tuxtech.com.index.php.j2', 'dest': '/var/www/tuxtech.com/html/index.php'}
+      - {'src': 'lengoldenstein.com.index.html.j2', 'dest': '/var/www/lengoldenstein.com/html/index.html'}
+
+
+  - name: 'Servies Config for WEB'
+    ansible.builtin.service:
+      name: '{{ item.name }}'
+      state: '{{ item.state }}'
+      enabled: '{{ item.enabled }}'
+    loop:
+      - {name: 'httpd', state: 'started', enabled: true}

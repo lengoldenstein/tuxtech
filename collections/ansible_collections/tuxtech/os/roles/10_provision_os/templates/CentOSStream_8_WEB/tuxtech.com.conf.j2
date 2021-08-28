@@ -1,0 +1,15 @@
+<VirtualHost *:80>
+    ServerName tuxtech.com
+    ServerAlias web1 web2
+    ServerAlias *.tuxtech.com
+    ServerAdmin webmaster@tuxtech.com
+    DocumentRoot /var/www/tuxtech.com/html
+
+    <Directory /var/www/tuxtech.com/html>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+    </Directory>
+
+    ErrorLog /var/log/httpd/tuxtech.com-error.log
+    CustomLog /var/log/httpd/tuxtech.com-access.log combined
+</VirtualHost>
