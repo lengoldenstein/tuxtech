@@ -1,23 +1,24 @@
 ---
-- name: '[ansible.builtin.dnf] Install module stream idm:client'
-  ansible.builtin.dnf:
-    name:
-      - '@idm:client'
+- block:
+  - name: '[ansible.builtin.dnf] Install module stream idm:client'
+    ansible.builtin.dnf:
+      name:
+        - '@idm:client'
 
 
-- name: '[ansible.builtin.command] ipa-client-install to join IDM Domain idm.tuxtech.com'
-  ansible.builtin.command:
-    argv:
-      - /usr/sbin/ipa-client-install
-      - --domain=idm.tuxtech.com
-      - --realm=IDM.TUXTECH.COM
-      - --principal={{ idm_username }}
-      - --password={{ idm_password }}
-      - --mkhomedir
-      - --force-join
-      - --unattended
-  ignore_errors: true
-  no_log: true
+  - name: '[ansible.builtin.command] ipa-client-install to join IDM Domain idm.tuxtech.com'
+    ansible.builtin.command:
+      argv:
+        - /usr/sbin/ipa-client-install
+        - --domain=idm.tuxtech.com
+        - --realm=IDM.TUXTECH.COM
+        - --principal={{ idm_username }}
+        - --password={{ idm_password }}
+        - --mkhomedir
+        - --force-join
+        - --unattended
+    # ignore_errors: true
+    no_log: true
   when:
-    - hostgroup != 'CentOSStream_8_FMN' or
-      hostgroup != 'CentOSStream_8_IDM'
+    - hostgroup != 'CentOSStream_8_FMN'
+    - hostgroup != 'CentOSStream_8_IDM'

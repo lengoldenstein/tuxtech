@@ -6,6 +6,8 @@
       name: '{{ inventory_hostname }}'
       state: 'powered-on'
     delegate_to: 'localhost'
+    tags:
+      - 'os_provision'
 
 
   - name: 'Wait for operating system to be installed'
@@ -17,6 +19,8 @@
       sleep: 15
       timeout: 3600
     delegate_to: 'localhost'
+    tags:
+      - 'os_provision'
 
 
   - name: 'Remove Foreman boot CD-ROM'
@@ -25,15 +29,22 @@
       cdrom:
         type: 'none'
     delegate_to: 'localhost'
+    tags:
+      - 'os_provision'
 
 
   - name: 'Gather facts for ansible variables'
     ansible.builtin.setup:
+    tags:
+      - 'os_config'
+      - 'role_config'
 
 
   - name: 'Configure hostgroup/os settings'
     include_tasks: '{{ hostgroup }}.yml'
-
+    tags:
+      - 'os_config'
+      - 'role_config'
 
   module_defaults:
     # Can this be external file for cleanliness?
