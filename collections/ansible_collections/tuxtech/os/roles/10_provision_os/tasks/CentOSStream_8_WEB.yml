@@ -18,6 +18,9 @@
       name:
         - '@httpd:2.4/common'
         - '@php:7.2/common'
+        - '@python39:3.9/common'
+        - 'certbot'
+        - 'python3-certbot-apache'
       state: 'present'
     notify: 'restart httpd'
 
@@ -48,7 +51,6 @@
     notify: 'restart httpd'
 
 
-  # Install Web content
   - name: 'Content configuration for WEB'
     ansible.builtin.template:
       src: 'CentOSStream_8_WEB/{{ item.src }}'
@@ -68,5 +70,22 @@
       enabled: '{{ item.enabled }}'
     loop:
       - {name: 'httpd', state: 'started', enabled: true}
+
+
+  - name: 'Execute cerbot to install SSL'
+    ansible.builtin.command:
+      argv:
+        - /bin/certbot
+        - --apache
+        - -m len@lengoldenstein.com
+        - --agree-tos
+        - -d {{ item.domain }}
+        - -d www.{{ item.domain }}
+        - -n
+    loop:
+      - {'domain': 'tuxtech.com'}
+      - {'domain': 'lengoldenstein.com'}
+    when:
+      - inventory_hostname == 'web1.tuxtech.com'
   tags:
     - 'role_config'

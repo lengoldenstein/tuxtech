@@ -35,16 +35,16 @@
 
   - name: 'Gather facts for ansible variables'
     ansible.builtin.setup:
-    tags:
-      - 'os_config'
-      - 'role_config'
+    # tags:
+    #   - 'os_config'
+    #   - 'role_config'
 
 
   - name: 'Configure hostgroup/os settings'
     include_tasks: '{{ hostgroup }}.yml'
-    tags:
-      - 'os_config'
-      - 'role_config'
+    # tags:
+    #   - 'os_config'
+    #   - 'role_config'
 
   module_defaults:
     # Can this be external file for cleanliness?
