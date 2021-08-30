@@ -10,12 +10,16 @@
     delegate_to: 'localhost'
 
 
-  - name: 'Start ntpd service for ESXi Host'
+  - name: 'Start ntpd and ssh services for ESXi Host'
     community.vmware.vmware_host_service_manager:
       esxi_hostname: '{{ inventory_hostname }}'
-      service_name: 'ntpd'
+      service_name: '{{ item }}'
       service_policy: 'on'
       state: 'present'
+    loop:
+      - 'ntpd'
+      - 'TSM'
+      - 'TSM-SSH'
     delegate_to: 'localhost'
 
 
