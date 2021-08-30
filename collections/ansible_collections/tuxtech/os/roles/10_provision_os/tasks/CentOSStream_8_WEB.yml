@@ -13,7 +13,7 @@
 
 
 - block:
-  - name: 'Install required packages for WEB'
+  - name: 'Install required packages for CentOSStream_8_Web'
     ansible.builtin.dnf:
       name:
         - '@httpd:2.4/common'
