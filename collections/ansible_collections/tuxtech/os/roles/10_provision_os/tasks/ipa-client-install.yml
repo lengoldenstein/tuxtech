@@ -12,8 +12,8 @@
         - /usr/sbin/ipa-client-install
         - --domain=idm.tuxtech.com
         - --realm=IDM.TUXTECH.COM
-        - --principal={{ idm_username }}
-        - --password={{ idm_password }}
+        - --principal={{ tuxtech.idm.username }}
+        - --password={{ tuxtech.idm.password }}
         - --mkhomedir
         - --force-join
         - --unattended

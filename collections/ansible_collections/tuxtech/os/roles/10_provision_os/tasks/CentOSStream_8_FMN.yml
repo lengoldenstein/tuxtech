@@ -75,7 +75,7 @@
         - --enable-foreman-compute-openstack
         - --enable-foreman-compute-libvirt
         - --enable-foreman-compute-ovirt
-        - --foreman-initial-admin-password={{ foreman_password }}
+        - --foreman-initial-admin-password={{ tuxtech.foreman.password }}
     no_log: true
 
 

@@ -11,9 +11,9 @@
   module_defaults:
     # Can this be external file for cleanliness?
     community.general.ipa_host:
-      ipa_host: '{{ idm_hostname }}'
-      ipa_user: '{{ idm_username }}'
-      ipa_pass: '{{ idm_password }}'
+      ipa_host: '{{ tuxtech.idm.hostname }}'
+      ipa_user: '{{ tuxtech.idm.username }}'
+      ipa_pass: '{{ tuxtech.idm.password }}'
       validate_certs: false
     blockinfile:
       marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'

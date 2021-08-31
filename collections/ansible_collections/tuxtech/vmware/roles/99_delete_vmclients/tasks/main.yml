@@ -11,9 +11,9 @@
   module_defaults:
     # Can this be external file for cleanliness?
     community.vmware.vmware_guest:
-      hostname: '{{ vmware_hostname }}'
-      username: '{{ vmware_username }}'
-      password: '{{ vmware_password }}'
+      hostname: '{{ tuxtech.vmware.hostname }}'
+      username: '{{ tuxtech.vmware.username }}'
+      password: '{{ tuxtech.vmware.password }}'
       validate_certs: false
     blockinfile:
       marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'

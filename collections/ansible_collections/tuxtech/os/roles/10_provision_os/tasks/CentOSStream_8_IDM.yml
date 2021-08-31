@@ -3,11 +3,15 @@
 - block:
   - name: 'Configure EL/CentOS 8 Base OS'
     include_tasks: 'el8_postprovision.yml'
-    tags: 'baseos'
+    tags:
+      - 'os_config'
 
   # Configure additional "Identity Management" requirements
-  # - name: 'Reboot'
-  #   ansible.builtin.reboot:
+  - name: 'Reboot'
+    ansible.builtin.reboot:
+    tags:
+      - 'os_config'
+
 
   - name: 'Install required packages for IDM server with integrated DNS'
     ansible.builtin.dnf:
@@ -25,8 +29,8 @@
         - --setup-dns
         - --domain=idm.tuxtech.com
         - --realm=IDM.TUXTECH.COM
-        - --ds-password={{ idm_password }}
-        - --admin-password={{ idm_password }}
+        - --ds-password={{ tuxtech.idm.password }}
+        - --admin-password={{ tuxtech.idm.password }}
         - --forwarder=192.168.1.6
         - --no-reverse
         - --allow-zone-overlap
@@ -47,8 +51,8 @@
         # - --server=idm1.tuxtech.com
         - --domain=idm.tuxtech.com
         - --realm=IDM.TUXTECH.COM
-        - --principal={{ idm_username }}
-        - --admin-password={{ idm_password }}
+        - --principal={{ tuxtech.idm.username }}
+        - --admin-password={{ tuxtech.idm.password }}
         - --forwarder=192.168.1.6
         - --no-reverse
         - --allow-zone-overlap
@@ -62,6 +66,7 @@
 
   - name: 'Configure IDM server'
     community.general.ipa_config:
+      ipadefaultemaildomain: 'tuxtech.com'
       ipadefaultloginshell: '/bin/bash'
       ipahomesrootdir: '/home/idm.tuxtech.com/'
 
@@ -71,7 +76,7 @@
       name: 'len'
       givenname: 'Len'
       sn: 'Goldenstein'
-      password: '{{ idm_password }}'
+      password: '{{ tuxtech.idm.password }}'
       sshpubkey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa3aUqQU68g7DXPTPx3r7uLz1FGI+WYs062x3qmuICVT789Q\
         E++tWDKRO/Yg3EZwyKzEjFkDeASg8V5QkhkwVKqEmm7UCOreeEPbSLyr+NWGCeHhS7o2ZTfgROjgsBPdwFmYCq\
         tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
@@ -83,10 +88,26 @@
 
   - name: 'Configure IDM Groups'
     community.general.ipa_group:
-      name: 'admins'
-      user:
-        - 'admin'
-        - 'len'
+      name: '{{ item.name }}'
+      user: '{{ item.user }}'
+      state: 'present'
+    loop:
+      - {'name': 'admins', 'user': ['admin', 'len']}
+      - {'name': 'password_noexpire', 'user': 'len'}
+
+
+  - name: 'Configure IDM password policies'
+    community.general.ipa_pwpolicy:
+      group: 'password_noexpire'
+      maxpwdlife: 0
+      minpwdlife: 0
+      historylength: 0
+      minclasses: 0
+      minlength: 8
+      maxfailcount: 6
+      failinterval: 60
+      lockouttime: 600
+      priority: 10
       state: 'present'
 
 
@@ -120,26 +141,31 @@
   module_defaults:
     community.general.ipa_config:
       ipa_host: '{{ inventory_hostname }}'
-      ipa_user: '{{ idm_username }}'
-      ipa_pass: '{{ idm_password }}'
+      ipa_user: '{{ tuxtech.idm.username }}'
+      ipa_pass: '{{ tuxtech.idm.password }}'
       validate_certs: false
     community.general.ipa_user:
       ipa_host: '{{ inventory_hostname }}'
-      ipa_user: '{{ idm_username }}'
-      ipa_pass: '{{ idm_password }}'
+      ipa_user: '{{ tuxtech.idm.username }}'
+      ipa_pass: '{{ tuxtech.idm.password }}'
       validate_certs: false
     community.general.ipa_group:
       ipa_host: '{{ inventory_hostname }}'
-      ipa_user: '{{ idm_username }}'
-      ipa_pass: '{{ idm_password }}'
+      ipa_user: '{{ tuxtech.idm.username }}'
+      ipa_pass: '{{ tuxtech.idm.password }}'
       validate_certs: false
     community.general.ipa_hbacrule:
       ipa_host: '{{ inventory_hostname }}'
-      ipa_user: '{{ idm_username }}'
-      ipa_pass: '{{ idm_password }}'
+      ipa_user: '{{ tuxtech.idm.username }}'
+      ipa_pass: '{{ tuxtech.idm.password }}'
       validate_certs: false
     community.general.ipa_sudorule:
       ipa_host: '{{ inventory_hostname }}'
-      ipa_user: '{{ idm_username }}'
-      ipa_pass: '{{ idm_password }}'
+      ipa_user: '{{ tuxtech.idm.username }}'
+      ipa_pass: '{{ tuxtech.idm.password }}'
+      validate_certs: false
+    community.general.ipa_pwpolicy:
+      ipa_host: '{{ inventory_hostname }}'
+      ipa_user: '{{ tuxtech.idm.username }}'
+      ipa_pass: '{{ tuxtech.idm.password }}'
       validate_certs: false

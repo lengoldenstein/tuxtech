@@ -211,7 +211,7 @@
       medium: 'CentOS 7 mirror'
       ptable: 'Kickstart default - TuxTech'
       pxe_loader: 'PXELinux BIOS'
-      root_pass: '{{ foreman_password }}'
+      root_pass: '{{ tuxtech.foreman.password }}'
       parameters:
         - name: 'time-zone'
           parameter_type: 'string'
@@ -252,7 +252,7 @@
       medium: 'CentOS Stream'
       ptable: 'Kickstart default - TuxTech'
       pxe_loader: 'PXELinux BIOS'
-      root_pass: '{{ foreman_password }}'
+      root_pass: '{{ tuxtech.foreman.password }}'
       parameters:
         - name: 'time-zone'
           parameter_type: 'string'
@@ -293,7 +293,7 @@
       medium: 'CentOS Stream'
       ptable: 'Kickstart default - TuxTech'
       pxe_loader: 'PXELinux BIOS'
-      root_pass: '{{ foreman_password }}'
+      root_pass: '{{ tuxtech.foreman.password }}'
       parameters:
         - name: 'time-zone'
           parameter_type: 'string'
@@ -334,7 +334,7 @@
       medium: 'CentOS Stream'
       ptable: 'Kickstart default - TuxTech'
       pxe_loader: 'PXELinux BIOS'
-      root_pass: '{{ foreman_password }}'
+      root_pass: '{{ tuxtech.foreman.password }}'
       parameters:
         - name: 'time-zone'
           parameter_type: 'string'
@@ -375,7 +375,7 @@
       medium: 'CentOS Stream'
       ptable: 'Kickstart default - TuxTech'
       pxe_loader: 'PXELinux BIOS'
-      root_pass: '{{ foreman_password }}'
+      root_pass: '{{ tuxtech.foreman.password }}'
       parameters:
         - name: 'time-zone'
           parameter_type: 'string'
@@ -444,43 +444,43 @@
   module_defaults:
     # Can this be external file for cleanliness?
     community.vmware.vsphere_copy:
-      hostname: '{{ vmware_hostname }}'
-      username: '{{ vmware_username }}'
-      password: '{{ vmware_password }}'
+      hostname: '{{ tuxtech.vmware.hostname }}'
+      username: '{{ tuxtech.vmware.username }}'
+      password: '{{ tuxtech.vmware.password }}'
       validate_certs: false
     theforeman.foreman.subnet:
-      username: '{{ foreman_username }}'
-      password: '{{ foreman_password }}'
+      username: '{{ tuxtech.foreman.username }}'
+      password: '{{ tuxtech.foreman.password }}'
       server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     theforeman.foreman.partition_table:
-      username: '{{ foreman_username }}'
-      password: '{{ foreman_password }}'
+      username: '{{ tuxtech.foreman.username }}'
+      password: '{{ tuxtech.foreman.password }}'
       server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     theforeman.foreman.operatingsystem:
-      username: '{{ foreman_username }}'
-      password: '{{ foreman_password }}'
+      username: '{{ tuxtech.foreman.username }}'
+      password: '{{ tuxtech.foreman.password }}'
       server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     theforeman.foreman.hostgroup:
-      username: '{{ foreman_username }}'
-      password: '{{ foreman_password }}'
+      username: '{{ tuxtech.foreman.username }}'
+      password: '{{ tuxtech.foreman.password }}'
       server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     theforeman.foreman.provisioning_template:
-      username: '{{ foreman_username }}'
-      password: '{{ foreman_password }}'
+      username: '{{ tuxtech.foreman.username }}'
+      password: '{{ tuxtech.foreman.password }}'
       server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     theforeman.foreman.setting:
-      username: '{{ foreman_username }}'
-      password: '{{ foreman_password }}'
+      username: '{{ tuxtech.foreman.username }}'
+      password: '{{ tuxtech.foreman.password }}'
       server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     theforeman.foreman.os_default_template:
-      username: '{{ foreman_username }}'
-      password: '{{ foreman_password }}'
+      username: '{{ tuxtech.foreman.username }}'
+      password: '{{ tuxtech.foreman.password }}'
       server_url: 'https://{{ inventory_hostname }}'
       validate_certs: false
     blockinfile:

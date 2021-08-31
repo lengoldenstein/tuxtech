@@ -30,14 +30,14 @@
   module_defaults:
     # Can this be external file for cleanliness?
     theforeman.foreman.host:
-      username: '{{ foreman_username }}'
-      password: '{{ foreman_password }}'
-      server_url: 'https://{{ foreman_hostname }}'
+      username: '{{ tuxtech.foreman.username }}'
+      password: '{{ tuxtech.foreman.password }}'
+      server_url: 'https://{{ tuxtech.foreman.hostname }}'
       validate_certs: false
     community.vmware.vmware_guest_info:
-      hostname: '{{ vmware_hostname }}'
-      username: '{{ vmware_username }}'
-      password: '{{ vmware_password }}'
+      hostname: '{{ tuxtech.vmware.hostname }}'
+      username: '{{ tuxtech.vmware.username }}'
+      password: '{{ tuxtech.vmware.password }}'
       validate_certs: false
     blockinfile:
       marker: '# {mark} TUXTECH ANSIBLE MANAGED BLOCK'
