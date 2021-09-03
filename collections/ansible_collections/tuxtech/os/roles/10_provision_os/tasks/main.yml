@@ -1,50 +1,41 @@
 ---
 # tasks file for 10_provision_os
 - block:
-  - name: Power on vm to start OS provisioning
-    community.vmware.vmware_guest_powerstate:
-      name: '{{ inventory_hostname }}'
-      state: 'powered-on'
-    delegate_to: 'localhost'
-    tags:
-      - 'os_provision'
+    - name: Power on vm to start OS provisioning
+      community.vmware.vmware_guest_powerstate:
+        name: '{{ inventory_hostname }}'
+        state: 'powered-on'
+      delegate_to: 'localhost'
 
 
-  - name: 'Wait for operating system to be installed'
-    wait_for:
-      host: '{{ inventory_hostname }}'
-      port: 22
-      search_regex: 'OpenSSH'
-      delay: 5
-      sleep: 15
-      timeout: 3600
-    delegate_to: 'localhost'
-    tags:
-      - 'os_provision'
+    - name: 'Wait for operating system to be installed'
+      wait_for:
+        host: '{{ inventory_hostname }}'
+        port: 22
+        search_regex: 'OpenSSH'
+        delay: 5
+        sleep: 15
+        timeout: 3600
+      delegate_to: 'localhost'
 
 
-  - name: 'Remove Foreman boot CD-ROM'
-    community.vmware.vmware_guest:
-      name: '{{ inventory_hostname }}'
-      cdrom:
-        type: 'none'
-    delegate_to: 'localhost'
-    tags:
-      - 'os_provision'
+    - name: 'Remove Foreman boot CD-ROM'
+      community.vmware.vmware_guest:
+        name: '{{ inventory_hostname }}'
+        cdrom:
+          type: 'none'
+      delegate_to: 'localhost'
+  tags:
+    - 'os_provision'
+
+- block:
+    - name: 'Gather facts for ansible variables'
+      ansible.builtin.setup:
 
 
-  - name: 'Gather facts for ansible variables'
-    ansible.builtin.setup:
-    # tags:
-    #   - 'os_config'
-    #   - 'role_config'
+    - name: 'Configure hostgroup/os settings'
+      include_tasks: '{{ hostgroup }}.yml'
 
-
-  - name: 'Configure hostgroup/os settings'
-    include_tasks: '{{ hostgroup }}.yml'
-    # tags:
-    #   - 'os_config'
-    #   - 'role_config'
 
   module_defaults:
     # Can this be external file for cleanliness?

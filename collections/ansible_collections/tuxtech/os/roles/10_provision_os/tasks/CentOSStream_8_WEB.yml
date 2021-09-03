@@ -1,91 +1,91 @@
 ---
 # Configuration for CentOSStream_8_Web hostgroups
-- name: 'Configure EL/CentOS 8 Base OS'
-  include_tasks: 'el8_postprovision.yml'
-  tags:
-  - 'os_config'
+- block:
+    - name: 'Configure EL/CentOS 8 Base OS'
+      include_tasks: 'os_config_el8.yml'
 
-# Configure additional "Web Server" requirements
-- name: 'Reboot'
-  ansible.builtin.reboot:
+
+    # Configure additional "Web Server" requirements
+    - name: 'Reboot'
+      ansible.builtin.reboot:
   tags:
-  - 'os_config'
+    - 'os_config'
 
 
 - block:
-  - name: 'Install required packages for CentOSStream_8_Web'
-    ansible.builtin.dnf:
-      name:
-        - '@httpd:2.4/common'
-        - '@php:7.2/common'
-        - '@python39:3.9/common'
-        - 'certbot'
-        - 'python3-certbot-apache'
-      state: 'present'
-    notify: 'restart httpd'
+    - name: 'Install required packages for CentOSStream_8_Web'
+      ansible.builtin.dnf:
+        name:
+          - '@httpd:2.4/common'
+          - '@php:7.2/common'
+          - '@python39:3.9/common'
+          - 'certbot'
+          - 'python3-certbot-apache'
+        state: 'present'
+      notify: 'restart httpd'
 
 
-  - name: 'Create web content directories'
-    ansible.builtin.file:
-      path: '{{ item.path }}'
-      recurse: true
-      state: 'directory'
-      owner: 'root'
-      group: 'root'
-      mode: '0755'
-    loop:
-      - {'path': '/var/www/tuxtech.com/html'}
-      - {'path': '/var/www/lengoldenstein.com/html'}
+    - name: 'Create web content directories'
+      ansible.builtin.file:
+        path: '{{ item.path }}'
+        recurse: true
+        state: 'directory'
+        owner: 'root'
+        group: 'root'
+        mode: '0755'
+      loop:
+        - {'path': '/var/www/tuxtech.com/html'}
+        - {'path': '/var/www/lengoldenstein.com/html'}
 
 
-  - name: 'Install apache virtual host configuration'
-    ansible.builtin.template:
-      src: 'CentOSStream_8_WEB/{{ item.src }}'
-      dest: '{{ item.dest }}'
-      owner: 'root'
-      group: 'root'
-      mode: '0644'
-    loop:
-      - {'src': 'tuxtech.com.conf.j2', 'dest': '/etc/httpd/conf.d/tuxtech.com.conf'}
-      - {'src': 'lengoldenstein.com.conf.j2', 'dest': '/etc/httpd/conf.d/lengoldenstein.com.conf'}
-    notify: 'restart httpd'
+    - name: 'Install apache virtual host configuration'
+      ansible.builtin.template:
+        src: 'CentOSStream_8_WEB/{{ item.src }}'
+        dest: '{{ item.dest }}'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      loop:
+        - {'src': 'tuxtech.com.conf.j2', 'dest': '/etc/httpd/conf.d/tuxtech.com.conf'}
+        - {'src': 'lengoldenstein.com.conf.j2', 'dest': '/etc/httpd/conf.d/lengoldenstein.com.conf'}
+      notify: 'restart httpd'
 
 
-  - name: 'Content configuration for WEB'
-    ansible.builtin.template:
-      src: 'CentOSStream_8_WEB/{{ item.src }}'
-      dest: '{{ item.dest }}'
-      owner: 'root'
-      group: 'root'
-      mode: '0644'
-    loop:
-      - {'src': 'tuxtech.com.index.php.j2', 'dest': '/var/www/tuxtech.com/html/index.php'}
-      - {'src': 'lengoldenstein.com.index.html.j2', 'dest': '/var/www/lengoldenstein.com/html/index.html'}
+    - name: 'Content configuration for WEB'
+      ansible.builtin.template:
+        src: 'CentOSStream_8_WEB/{{ item.src }}'
+        dest: '{{ item.dest }}'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      loop:
+        - {'src': 'tuxtech.com.index.php.j2', 'dest': '/var/www/tuxtech.com/html/index.php'}
+        - {'src': 'lengoldenstein.com.index.html.j2', 'dest': '/var/www/lengoldenstein.com/html/index.html'}
 
 
-  - name: 'Services Config for WEB'
-    ansible.builtin.service:
-      name: '{{ item.name }}'
-      state: '{{ item.state }}'
-      enabled: '{{ item.enabled }}'
-    loop:
-      - {name: 'httpd', state: 'started', enabled: true}
+    - name: 'Services Config for WEB'
+      ansible.builtin.service:
+        name: '{{ item.name }}'
+        state: '{{ item.state }}'
+        enabled: '{{ item.enabled }}'
+      loop:
+        - {name: 'httpd', state: 'started', enabled: true}
 
 
-  - name: 'Execute cerbot to install SSL'
-    ansible.builtin.command:
-      argv:
-        - /bin/certbot
-        - --apache
-        - -m len@lengoldenstein.com
-        - --agree-tos
-        - -d {{ item.domain }}
-        - -d www.{{ item.domain }}
-        - -n
-    loop:
-      - {'domain': 'tuxtech.com'}
-      - {'domain': 'lengoldenstein.com'}
-    when:
-      - inventory_hostname == 'web1.tuxtech.com'
+    - name: 'Execute cerbot to install SSL'
+      ansible.builtin.command:
+        argv:
+          - /bin/certbot
+          - --apache
+          - -m len@lengoldenstein.com
+          - --agree-tos
+          - -d {{ item.domain }}
+          - -d www.{{ item.domain }}
+          - -n
+      loop:
+        - {'domain': 'tuxtech.com'}
+        - {'domain': 'lengoldenstein.com'}
+      when:
+        - inventory_hostname == 'web1.tuxtech.com'
   tags:
     - 'role_config'

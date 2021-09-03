@@ -1,142 +1,142 @@
 ---
 # Configuration for CentOSStream_8_IDM hostgroups
 - block:
-  - name: 'Configure EL/CentOS 8 Base OS'
-    include_tasks: 'el8_postprovision.yml'
-    tags:
-      - 'os_config'
-
-  # Configure additional "Identity Management" requirements
-  - name: 'Reboot'
-    ansible.builtin.reboot:
-    tags:
-      - 'os_config'
+    - name: 'Configure EL/CentOS 8 Base OS'
+      include_tasks: 'os_config_el8.yml'
 
 
-  - name: 'Install required packages for IDM server with integrated DNS'
-    ansible.builtin.dnf:
-      name:
-        - '@idm:DL1/dns'
+    # Configure additional "Identity Management" requirements
+    - name: 'Reboot'
+      ansible.builtin.reboot:
+  tags:
+    - 'os_config'
+
+- block:
+    - name: 'Install required packages for IDM server with integrated DNS'
+      ansible.builtin.dnf:
+        name:
+          - '@idm:DL1/dns'
 
 
-# Validate ntpd
+  # Validate ntpd
 
-#### INSTALL IDM AS PRIMARY OR REPLICA
-  - name: 'Install IDM Server Primary'
-    ansible.builtin.command:
-      argv:
-        - /usr/sbin/ipa-server-install
-        - --setup-dns
-        - --domain=idm.tuxtech.com
-        - --realm=IDM.TUXTECH.COM
-        - --ds-password={{ tuxtech.idm.password }}
-        - --admin-password={{ tuxtech.idm.password }}
-        - --forwarder=192.168.1.6
-        - --no-reverse
-        - --allow-zone-overlap
-        - --mkhomedir
-        - --unattended
-    ignore_errors: true
-    no_log: true
-    when:
-      - inventory_hostname == 'idm1.tuxtech.com'
-
-
-  - name: 'Install IDM Server Replica'
-    ansible.builtin.command:
-      argv:
-        - /usr/sbin/ipa-replica-install
-        - --setup-dns
-        - --setup-ca
-        # - --server=idm1.tuxtech.com
-        - --domain=idm.tuxtech.com
-        - --realm=IDM.TUXTECH.COM
-        - --principal={{ tuxtech.idm.username }}
-        - --admin-password={{ tuxtech.idm.password }}
-        - --forwarder=192.168.1.6
-        - --no-reverse
-        - --allow-zone-overlap
-        - --mkhomedir
-        - --unattended
-    ignore_errors: true
-    no_log: true
-    when:
-      - inventory_hostname != 'idm1.tuxtech.com'
+    - name: 'Install IDM Server Primary'
+      ansible.builtin.command:
+        argv:
+          - /usr/sbin/ipa-server-install
+          - --setup-dns
+          - --domain=idm.tuxtech.com
+          - --realm=IDM.TUXTECH.COM
+          - --ds-password={{ tuxtech.idm.password }}
+          - --admin-password={{ tuxtech.idm.password }}
+          - --forwarder=192.168.1.6
+          - --no-reverse
+          - --allow-zone-overlap
+          - --mkhomedir
+          - --unattended
+      ignore_errors: true
+      no_log: true
+      when:
+        - inventory_hostname == 'idm1.tuxtech.com'
 
 
-  - name: 'Configure IDM server'
-    community.general.ipa_config:
-      ipadefaultemaildomain: 'tuxtech.com'
-      ipadefaultloginshell: '/bin/bash'
-      ipahomesrootdir: '/home/idm.tuxtech.com/'
+    - name: 'Install IDM Server Replica'
+      ansible.builtin.command:
+        argv:
+          - /usr/sbin/ipa-replica-install
+          - --setup-dns
+          - --setup-ca
+          # - --server=idm1.tuxtech.com
+          - --domain=idm.tuxtech.com
+          - --realm=IDM.TUXTECH.COM
+          - --principal={{ tuxtech.idm.username }}
+          - --admin-password={{ tuxtech.idm.password }}
+          - --forwarder=192.168.1.6
+          - --no-reverse
+          - --allow-zone-overlap
+          - --mkhomedir
+          - --unattended
+      ignore_errors: true
+      no_log: true
+      when:
+        - inventory_hostname != 'idm1.tuxtech.com'
 
 
-  - name: 'Configure IDM Users'
-    community.general.ipa_user:
-      name: 'len'
-      givenname: 'Len'
-      sn: 'Goldenstein'
-      password: '{{ tuxtech.idm.password }}'
-      sshpubkey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa3aUqQU68g7DXPTPx3r7uLz1FGI+WYs062x3qmuICVT789Q\
-        E++tWDKRO/Yg3EZwyKzEjFkDeASg8V5QkhkwVKqEmm7UCOreeEPbSLyr+NWGCeHhS7o2ZTfgROjgsBPdwFmYCq\
-        tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
-        jEGZeD15DdyewgaH83kJU9tWU/k3cx1l9SbHVwDoZrdXxKzgQhmE5KshAms8kcdtDfTkTLOpLd8kkNc3dh4wFs\
-        XAOwNy5zjeHpTxkYJr5b1MRBj7OdpdMrVNyP len@lenmbpr15.tuxtech.com"
-      update_password: 'on_create'
-      state: 'present'
+    - name: 'Configure IDM server'
+      community.general.ipa_config:
+        ipadefaultemaildomain: 'tuxtech.com'
+        ipadefaultloginshell: '/bin/bash'
+        ipahomesrootdir: '/home/idm.tuxtech.com/'
 
 
-  - name: 'Configure IDM Groups'
-    community.general.ipa_group:
-      name: '{{ item.name }}'
-      user: '{{ item.user }}'
-      state: 'present'
-    loop:
-      - {'name': 'admins', 'user': ['admin', 'len']}
-      - {'name': 'password_noexpire', 'user': 'len'}
+    - name: 'Configure IDM Users'
+      community.general.ipa_user:
+        name: 'len'
+        givenname: 'Len'
+        sn: 'Goldenstein'
+        password: '{{ tuxtech.idm.password }}'
+        sshpubkey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa3aUqQU68g7DXPTPx3r7uLz1FGI+WYs062x3qmuICVT789Q\
+          E++tWDKRO/Yg3EZwyKzEjFkDeASg8V5QkhkwVKqEmm7UCOreeEPbSLyr+NWGCeHhS7o2ZTfgROjgsBPdwFmYCq\
+          tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
+          jEGZeD15DdyewgaH83kJU9tWU/k3cx1l9SbHVwDoZrdXxKzgQhmE5KshAms8kcdtDfTkTLOpLd8kkNc3dh4wFs\
+          XAOwNy5zjeHpTxkYJr5b1MRBj7OdpdMrVNyP len@lenmbpr15.tuxtech.com"
+        update_password: 'on_create'
+        state: 'present'
 
 
-  - name: 'Configure IDM password policies'
-    community.general.ipa_pwpolicy:
-      group: 'password_noexpire'
-      maxpwdlife: 0
-      minpwdlife: 0
-      historylength: 0
-      minclasses: 0
-      minlength: 8
-      maxfailcount: 6
-      failinterval: 60
-      lockouttime: 600
-      priority: 10
-      state: 'present'
+    - name: 'Configure IDM Groups'
+      community.general.ipa_group:
+        name: '{{ item.name }}'
+        user: '{{ item.user }}'
+        state: 'present'
+      loop:
+        - {'name': 'admins', 'user': ['admin', 'len']}
+        - {'name': 'password_noexpire', 'user': 'len'}
 
 
-  - name: 'Configure IDM HBAC Rules'
-    community.general.ipa_hbacrule:
-      name: 'admins_allow_all'
-      description: 'hbac rule'
-      usergroup: 'admins'
-      hostcategory: 'all'
-      servicecategory: 'all'
-      state: 'present'
+    - name: 'Configure IDM password policies'
+      community.general.ipa_pwpolicy:
+        group: 'password_noexpire'
+        maxpwdlife: 0
+        minpwdlife: 0
+        historylength: 0
+        minclasses: 0
+        minlength: 8
+        maxfailcount: 6
+        failinterval: 60
+        lockouttime: 600
+        priority: 10
+        state: 'present'
 
 
-  - name: 'Disable default HBAC rule: allow_all'
-    community.general.ipa_hbacrule:
-      name: 'allow_all'
-      state: 'disabled'
+    - name: 'Configure IDM HBAC Rules'
+      community.general.ipa_hbacrule:
+        name: 'admins_allow_all'
+        description: 'hbac rule'
+        usergroup: 'admins'
+        hostcategory: 'all'
+        servicecategory: 'all'
+        state: 'present'
 
 
-  - name: 'Configure IDM sudo Rules'
-    community.general.ipa_sudorule:
-      name: 'admins_allow_all'
-      description: 'admins rule'
-      usergroup: 'admins'
-      hostcategory: 'all'
-      cmdcategory: 'all'
-      sudoopt:
-        - '!authenticate'
-      state: 'present'
+    - name: 'Disable default HBAC rule: allow_all'
+      community.general.ipa_hbacrule:
+        name: 'allow_all'
+        state: 'disabled'
+
+
+    - name: 'Configure IDM sudo Rules'
+      community.general.ipa_sudorule:
+        name: 'admins_allow_all'
+        description: 'admins rule'
+        usergroup: 'admins'
+        hostcategory: 'all'
+        cmdcategory: 'all'
+        sudoopt:
+          - '!authenticate'
+        state: 'present'
+  tags:
+    - 'role_config'
 
   module_defaults:
     community.general.ipa_config:

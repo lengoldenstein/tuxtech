@@ -2,8 +2,10 @@
 # Configuration for CentOS_7_GP host groups
 - block:
   - name: 'Configure EL/CentOS 7 Base OS'
-    import_tasks: 'tuxtech-os-el7_postprovision.yml'
+    import_tasks: 'os_config_el7.yml'
 
   # Configure additional "General Purpose" requirements
   - name: 'Reboot'
     ansible.builtin.reboot:
+  tags:
+    - 'os_config'

@@ -2,8 +2,10 @@
 # Configuration for CentOSStream_8_GP hostgroups
 - block:
   - name: 'Configure EL/CentOS 8 Base OS'
-    include_tasks: 'el8_postprovision.yml'
+    include_tasks: 'os_config_el8.yml'
 
   # Configure additional "General Purpose" requirements
   - name: 'Reboot'
     ansible.builtin.reboot:
+  tags:
+    - 'os_config'

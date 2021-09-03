@@ -1,84 +1,88 @@
 ---
 # Configuration for CentOSStream_8_FMN hostgroups
 - block:
-  - name: 'Configure EL/CentOS 8 Base OS'
-    include_tasks: 'el8_postprovision.yml'
+    - name: 'Configure EL/CentOS 8 Base OS'
+      include_tasks: 'os_config_el8.yml'
+
+    - name: 'Reboot'
+      ansible.builtin.reboot:
+  tags:
+    - 'os_config'
 
 
-  # - name: 'Reboot'
-  #   ansible.builtin.reboot:
+- block:
+    - name: 'Gather installed packages info'
+      ansible.builtin.package_facts:
 
 
-  - name: 'Gather installed packages info'
-    ansible.builtin.package_facts:
+    # Configure additional "Foreman/Satellite" requirements
+    - name: 'Remove default puppet package as Foreman installs its own'
+      ansible.builtin.dnf:
+        name:
+          - 'puppet'
+        autoremove: true
+        state: 'absent'
+      when: '"foreman-release" not in ansible_facts.packages'
 
 
-  # Configure additional "Foreman/Satellite" requirements
-  - name: 'Remove default puppet package as Foreman installs its own'
-    ansible.builtin.dnf:
-      name:
-        - 'puppet'
-      autoremove: true
-      state: 'absent'
-    when: '"foreman-release" not in ansible_facts.packages'
+    - name: 'Remove default provisioned puppet ssl certificates'
+      ansible.builtin.file:
+        name: '/etc/puppetlabs/puppet/ssl/'
+        state: 'absent'
+      when: '"foreman-release" not in ansible_facts.packages'
 
 
-  - name: 'Remove default provisioned puppet ssl certificates'
-    ansible.builtin.file:
-      name: '/etc/puppetlabs/puppet/ssl/'
-      state: 'absent'
-    when: '"foreman-release" not in ansible_facts.packages'
+    - name: 'Install required packages for Foreman'
+      ansible.builtin.dnf:
+        name:
+          - 'https://yum.puppet.com/puppet6-release-el-8.noarch.rpm'
+          - 'https://yum.theforeman.org/releases/2.5/el8/x86_64/foreman-release.rpm'
+          - '@ruby:2.7'
+        disable_gpg_check: true
+        state: 'present'
 
 
-  - name: 'Install required packages for Foreman'
-    ansible.builtin.dnf:
-      name:
-        - 'https://yum.puppet.com/puppet6-release-el-8.noarch.rpm'
-        - 'https://yum.theforeman.org/releases/2.5/el8/x86_64/foreman-release.rpm'
-        - '@ruby:2.7'
-      disable_gpg_check: true
-      state: 'present'
+    - name: 'Prepare foreman-installer'
+      ansible.builtin.dnf:
+        name:
+          - 'foreman-installer'
+        disable_gpg_check: true
+        state: 'present'
 
 
-  - name: 'Prepare foreman-installer'
-    ansible.builtin.dnf:
-      name:
-        - 'foreman-installer'
-      disable_gpg_check: true
-      state: 'present'
+    - name: 'Install Foreman'
+      ansible.builtin.command:
+        argv:
+          - /usr/sbin/foreman-installer
+          - --foreman-initial-organization=TuxTech
+          - --enable-foreman-plugin-ansible
+          - --enable-foreman-plugin-setup
+          - --enable-foreman-plugin-templates
+          - --enable-foreman-plugin-bootdisk
+          - --enable-foreman-plugin-azure
+          - --enable-foreman-plugin-remote-execution
+          - --enable-foreman-plugin-remote-execution-cockpit
+          - --enable-foreman-plugin-snapshot-management
+          - --enable-foreman-plugin-tasks
+          - --enable-foreman-plugin-webhooks
+          - --enable-foreman-cli
+          - --enable-foreman-cli-ansible
+          - --enable-foreman-cli-azure
+          - --enable-foreman-cli-remote-execution
+          - --enable-foreman-proxy-plugin-ansible
+          - --enable-foreman-proxy-plugin-remote-execution-ssh
+          - --enable-foreman-compute-vmware
+          - --enable-foreman-compute-ec2
+          - --enable-foreman-compute-gce
+          - --enable-foreman-compute-openstack
+          - --enable-foreman-compute-libvirt
+          - --enable-foreman-compute-ovirt
+          - --foreman-initial-admin-password={{ tuxtech.foreman.password }}
+      no_log: true
 
 
-  - name: 'Install Foreman'
-    ansible.builtin.command:
-      argv:
-        - /usr/sbin/foreman-installer
-        - --foreman-initial-organization=TuxTech
-        - --enable-foreman-plugin-ansible
-        - --enable-foreman-plugin-setup
-        - --enable-foreman-plugin-templates
-        - --enable-foreman-plugin-bootdisk
-        - --enable-foreman-plugin-azure
-        - --enable-foreman-plugin-remote-execution
-        - --enable-foreman-plugin-remote-execution-cockpit
-        - --enable-foreman-plugin-snapshot-management
-        - --enable-foreman-plugin-tasks
-        - --enable-foreman-plugin-webhooks
-        - --enable-foreman-cli
-        - --enable-foreman-cli-ansible
-        - --enable-foreman-cli-azure
-        - --enable-foreman-cli-remote-execution
-        - --enable-foreman-proxy-plugin-ansible
-        - --enable-foreman-proxy-plugin-remote-execution-ssh
-        - --enable-foreman-compute-vmware
-        - --enable-foreman-compute-ec2
-        - --enable-foreman-compute-gce
-        - --enable-foreman-compute-openstack
-        - --enable-foreman-compute-libvirt
-        - --enable-foreman-compute-ovirt
-        - --foreman-initial-admin-password={{ tuxtech.foreman.password }}
-    no_log: true
-
-
-  - name: 'Configure settings for a Foreman/Satellite server'
-    ansible.builtin.include_role:
-      name: 'tuxtech.foreman.10_configure_foreman'
+    - name: 'Configure settings for a Foreman/Satellite server'
+      ansible.builtin.include_role:
+        name: 'tuxtech.foreman.10_configure_foreman'
+  tags:
+    - 'role_config'
