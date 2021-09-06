@@ -2,34 +2,34 @@
 # tasks file for 10_provision_os
 # Provision the OS
 - block:
-    - name: Power on vm to start OS provisioning
-      community.vmware.vmware_guest_powerstate:
-        name: '{{ inventory_hostname }}'
-        state: 'powered-on'
-      delegate_to: 'localhost'
+  - name: Power on vm to start OS provisioning
+    community.vmware.vmware_guest_powerstate:
+      name: '{{ inventory_hostname }}'
+      state: 'powered-on'
+    delegate_to: 'localhost'
 
 
-    - name: 'Wait for operating system to be installed'
-      wait_for:
-        host: '{{ inventory_hostname }}'
-        port: 22
-        search_regex: 'OpenSSH'
-        delay: 5
-        sleep: 15
-        timeout: 3600
-      delegate_to: 'localhost'
+  - name: 'Wait for operating system to be installed'
+    wait_for:
+      host: '{{ inventory_hostname }}'
+      port: 22
+      search_regex: 'OpenSSH'
+      delay: 5
+      sleep: 15
+      timeout: 3600
+    delegate_to: 'localhost'
 
 
-    - name: 'Remove Foreman boot CD-ROM'
-      community.vmware.vmware_guest:
-        name: '{{ inventory_hostname }}'
-        cdrom:
-          type: 'none'
-      delegate_to: 'localhost'
+  - name: 'Remove Foreman boot CD-ROM'
+    community.vmware.vmware_guest:
+      name: '{{ inventory_hostname }}'
+      cdrom:
+        type: 'none'
+    delegate_to: 'localhost'
   tags:
     - 'os_provision'
   module_defaults:
-    # Can this be external file for cleanliness?
+  # Can this be external file for cleanliness?
     community.vmware.vmware_guest_powerstate:
       hostname: '{{ tuxtech.vmware.hostname }}'
       username: '{{ tuxtech.vmware.username }}'
