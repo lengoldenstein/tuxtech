@@ -1,5 +1,6 @@
 ---
 # tasks file for 10_provision_os
+# Provision the OS
 - block:
     - name: Power on vm to start OS provisioning
       community.vmware.vmware_guest_powerstate:
@@ -27,7 +28,6 @@
       delegate_to: 'localhost'
   tags:
     - 'os_provision'
-
   module_defaults:
     # Can this be external file for cleanliness?
     community.vmware.vmware_guest_powerstate:
@@ -41,10 +41,10 @@
       password: '{{ tuxtech.vmware.password }}'
       validate_certs: false
 
-- block:
-    - name: 'Gather facts for ansible variables'
-      ansible.builtin.setup:
 
+# Configure the newly provisioned OS
+- name: 'Gather facts for ansible variables'
+  ansible.builtin.setup:
 
-    - name: 'Configure hostgroup/os settings'
-      include_tasks: '{{ hostgroup }}.yml'
+- name: 'Configure hostgroup/os settings'
+  include_tasks: '{{ hostgroup }}.yml'
