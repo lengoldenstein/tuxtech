@@ -189,28 +189,37 @@ Decommision operating system
 `
 
 
-Streamlined usage
-====
-provision: vmware_20, foreman_20, os_10  
-delete: vmware_99, foreman_99, os_99
+Automate all the Things
+===
+The tags _provision_ and _delete_ have stitch together the inidividual steps in to a fully automated solution.
+
+Create virtual machine, register to Foreman, install operating system, configure OS, install/configure application role:
+
+`ansible-playbook tuxtech-main.yml --tags provision --limit idm2.tuxtech.com,web
+`
+
+Delete a virtual machine from IDM, Foreman and VMware:
+
+`ansible-playbook tuxtech-main.yml --tags delete --limit web2.tuxtech.com
+`
+
+---
 
 Three-step provision process:
 
-Step | Ansible Tag |
------|----------|
- Provision Operation System  | os_provision |
- Configure Operation System | os_config |
- Configure Application Role | role_config |
+| Step | Ansible Tag |
+|------|----------|
+|  Provision Operation System  | os_provision |
+|  Configure Operation System | os_config |
+|  Configure Application Role | role_config |
+
+provision: vmware_20, foreman_20, os_10  
+delete: vmware_99, foreman_99, os_99
 
 Provision  
 `ansible-playbook tuxtech-main.yml --tags provision --limit foreman1.tuxtech.com
 `
 
-`ansible-playbook tuxtech-main.yml --tags provision --limit idm2.tuxtech.com,web
-`
-
-`ansible-playbook tuxtech-main.yml --tags delete --limit web2.tuxtech.com
-`
 
 Use _--skip-tags_ to run only certain pieces of provisioning.  For example, to update web configuration/content across the fleet, skip initial provisioning and OS configuration, only running the application role:  
 `ansible-playbook tuxtech-main.yml --tags os_10 --limit web2.tuxtech.com --skip-tags os_provision,os_config
