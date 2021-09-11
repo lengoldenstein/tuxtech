@@ -174,7 +174,7 @@ Delete Foreman host clients
 `ansible-playbook tuxtech-main.yml --tags foreman_99 --limit clients
 `
 
-FreeIPA/IDM
+CentOS/RHEL Operating System
 -----------
 Provision and configure the operating system
 - inventory host must have matching Foreman/Satellite hostgroup defined
