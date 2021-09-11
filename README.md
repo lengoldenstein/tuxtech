@@ -59,11 +59,11 @@ Define hostname, IP address and application role/hostgroup
 
 Defaults will applied from _tuxtech.vmware.20_create_vmclients_ unless specified:  
 <!-- --> |  <!-- -->
-------- | -------
-num_cpus | 2
-memory_mb | 2560
-sda_gb | 1
-sdb_gb | 20
+| ------- | -------
+| num_cpus | 2 |
+| memory_mb | 2560 |
+| sda_gb | 1 |
+| sdb_gb | 20 |
 
 TuxTech.com lab _inventory_:
 ```
