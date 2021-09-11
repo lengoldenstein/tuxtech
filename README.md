@@ -58,7 +58,7 @@ Define infrastructure groups
 Define hostname, IP address and application role/hostgroup
 
 Defaults will applied from _tuxtech.vmware.20_create_vmclients_ unless specified:  
-| <!-- --> |  <!-- --> |
+| key | value |
 | ------- | ------- |
 | num_cpus | 2 |
 | memory_mb | 2560 |
