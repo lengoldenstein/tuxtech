@@ -216,11 +216,6 @@ Three-step provision process:
 provision: vmware_20, foreman_20, os_10  
 delete: vmware_99, foreman_99, os_99
 
-Provision  
-`ansible-playbook tuxtech-main.yml --tags provision --limit foreman1.tuxtech.com
-`
-
-
 Use _--skip-tags_ to run only certain pieces of provisioning.  For example, to update web configuration/content across the fleet, skip initial provisioning and OS configuration, only running the application role:  
 `ansible-playbook tuxtech-main.yml --tags os_10 --limit web2.tuxtech.com --skip-tags os_provision,os_config
 `
