@@ -54,10 +54,10 @@ Configuration
 Inventory
 ---
 DNS must already exist  
-Define infrastructure groups  
+Define ansible/infrastructure groups  
 Define hostname, IP address and application role/hostgroup
 
-Defaults will applied from _tuxtech.vmware.20_create_vmclients_ unless specified:  
+VM defaults will applied from _tuxtech.vmware.20_create_vmclients_ unless specified:  
 | key | value |
 | ------- | ------- |
 | num_cpus | 2 |
@@ -99,11 +99,14 @@ centstr8-2.tuxtech.com  ipaddr='192.168.1.216'  hostgroup='CentOSStream_8_GP'
 
 ```
 
-tuxtech-configuration.yml
+Global configuration
 ---
-For clarity and scalability, we put infrastructure configuration in a global dictionary.  
-These hostnames and credentials represent endpoints ansible will target for API commands.  
+For clarity and scalability, we put infrastructure configuration in a global dictionary. 
+These hostnames and credentials represent endpoints ansible will target for API commands. 
 Encrypting sensitive credentials with inline ansible vault is strongly recommended.
+
+TuxTech.com lab _tuxtech-configuration.yml_:
+
 ```
 ---
 # Main configuration for TuxTech infrastructure
