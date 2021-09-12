@@ -131,6 +131,7 @@ Usage
 
 VMware ESXi
 -----------
+Ansible collection tuxtech.vmware  
 Configure common settings for an ESXi host
 - ESXi host must have an IP address, basic network settings and dns entry.
 - ESXi host must have root password set and matched in _tuxtech-configuration.yml_
@@ -144,7 +145,6 @@ Create VMware virtual machine guest clients
 `ansible-playbook tuxtech-main.yml --tags vmware_20 --limit idm,clients
 `
 
-
 Delete VMware virtual guest clients
 - ESXi host must be either in evaluation mode or licensed for vSphere APIs
 
@@ -154,6 +154,7 @@ Delete VMware virtual guest clients
 Foreman
 -------
 Configure common settings for a Foreman/Satellite server
+Ansible collection tuxtech.foreman  
 - Foreman host must have admin password set and matched in _tuxtech-configuration.yml_
 
 `ansible-playbook tuxtech-main.yml --tags foreman_10 --limit foreman1.tuxtech.com
@@ -172,6 +173,7 @@ Delete Foreman host clients
 
 CentOS/RHEL Operating System
 -----------
+Ansible collection tuxtech.os  
 Provision and configure the operating system
 - inventory host must have matching Foreman/Satellite hostgroup defined
 
@@ -182,6 +184,20 @@ Decommision operating system
 - inventory host must have matching Foreman/Satellite hostgroup defined
 
 `ansible-playbook tuxtech-main.yml --tags os_99 --limit idm1.tuxtech.com
+`
+
+Provisioning the operating system follows a three-step process:
+
+| Step | Ansible Tag |
+|------|----------|
+|  Provision Operation System  | os_provision |
+|  Configure Operation System | os_config |
+|  Configure Application Role | role_config |
+
+
+Use _--skip-tags_ to run only certain pieces of provisioning.  
+For example, to update web configuration/content across the fleet - skip initial provisioning and OS configuration, only running the application role:  
+`ansible-playbook tuxtech-main.yml --tags os_10 --limit web2.tuxtech.com --skip-tags os_provision,os_config
 `
 
 Automate all the Things!
@@ -199,20 +215,4 @@ Create virtual machine, register to Foreman, install operating system, configure
 Delete a virtual machine from IDM, Foreman and VMware:
 
 `ansible-playbook tuxtech-main.yml --tags delete --limit web2.tuxtech.com
-`
-
----
-
-Provisioning the operating system follows a three-step process:
-
-| Step | Ansible Tag |
-|------|----------|
-|  Provision Operation System  | os_provision |
-|  Configure Operation System | os_config |
-|  Configure Application Role | role_config |
-
-
-Use _--skip-tags_ to run only certain pieces of provisioning.  
-For example, to update web configuration/content across the fleet - skip initial provisioning and OS configuration, only running the application role:  
-`ansible-playbook tuxtech-main.yml --tags os_10 --limit web2.tuxtech.com --skip-tags os_provision,os_config
 `
