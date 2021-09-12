@@ -1,9 +1,0 @@
----
-# handlers file for baserhel8-tuxtech
-- name: 'rebuild grub'
-  command: '/usr/sbin/grub2-mkconfig -o /boot/grub2/grub.cfg'
-
-- name: 'restart postfix'
-  service:
-    name: 'postfix'
-    state: 'restarted'
