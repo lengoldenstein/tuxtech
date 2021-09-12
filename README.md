@@ -186,7 +186,7 @@ Decommision operating system
 
 Automate all the Things!
 ===
-The tags _provision_ and _delete_  stitch together the inidividual steps in to a fully automated play.  
+The tags _provision_ and _delete_ stitch together the individual steps in to a fully automated solution.  
 _--tag provision_ combines roles: vmware_20, foreman_20, os_10  
 _--tag delete_ combines roles: vmware_99, foreman_99, os_99  
 
