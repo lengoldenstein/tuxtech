@@ -7,33 +7,29 @@ A scalable automated provisioning platform for CentOS 7, 8, 8Stream, RHEL7, RHEL
 * [FreeIPA](https://www.freeipa.org/) ([IDM](https://access.redhat.com/products/identity-management))
 * [Apache HTTPd](https://httpd.apache.org)
 
-purpose of this is to...  
-Scripts for automating virtual infrastructure in the [Tuxtech.com](https://www.tuxtech.com) lab.
-* ESXi Configuration
-* Foreman/Satellite installation and configuration
-* CentOS7/8Stream provisioning and configuration
-* FreeIPA/IDM installation and configuration
-* Apache web server installation, configuration, SSL-enablement and content 
+These scripts automate the build and configuration of the [Tuxtech.com](https://www.tuxtech.com) Linux lab.  
+They also represent the advantages of infrastructure as code and learning modern 'devops' practices.
 
-see: *tuxtech-main.yml* for gist.
+While this software is intented for my own personal use, it may be useful for other members of technology community to inspire, learn and perhaps contribute.
 
-preamble:
-linked stuff
-might not work for any one else but..
+* Hypervisor (ESXi) standard configuration
+* CentOS/RHEL provisioning platform (Foreman) configuration
+* CentOS/RHEL operating system standard configuration
+* Identity Management server & client (FreeIPA) installation and configuration
+* Apache web server installation, configuration, SSL-enablement (certbot) and content deployment
+* Scalable to infinite combinations of operating systems and application roles
 
 Application Roles combine an operating system, version and purpose.
 Using the dynamic provisioning capabilities of Foreman, any number of combinations and scale are possible without a pre-built VMware virtual template.  
 Application Role customizations are provided by matching a Foreman hostgroup and an ansible script in the _tuxtech.os.10_provision_os_ collection.
 
-Application Roles available:
-
 | Role | OS | Version | Description |
 | ---- | ---- | --- | --- |
 | CentOS_7_GP | CentOS | 7 | General Purpose
 | CentOSStream_8_GP  | CentOSStream | 8 | General Purpose
-| CentOSStream_8_FMN | CentOSStream | 8 | Foreman
-| CentOSStream_8_IDM | CentOSStream | 8 | FreeIPA/IDM
-| CentOSStream_8_WEB | CentOSStream | 8 | Apache HTTPd
+| CentOSStream_8_FMN | CentOSStream | 8 | Foreman Server
+| CentOSStream_8_IDM | CentOSStream | 8 | FreeIPA/IDM Server
+| CentOSStream_8_WEB | CentOSStream | 8 | Apache HTTPd Server w/SSL
 
 Requirements
 ===
@@ -55,7 +51,7 @@ Inventory
 ---
 DNS must already exist  
 Define ansible/infrastructure groups  
-Define hostname, IP address and application role/hostgroup
+Define client hostname, IP address and application role/hostgroup
 
 VM defaults will applied from _tuxtech.vmware.20_create_vmclients_ unless specified:  
 | key | value |
@@ -188,10 +184,12 @@ Decommision operating system
 `ansible-playbook tuxtech-main.yml --tags os_99 --limit idm1.tuxtech.com
 `
 
-
-Automate all the Things
+Automate all the Things!
 ===
-The tags _provision_ and _delete_ have stitch together the inidividual steps in to a fully automated solution.
+The tags _provision_ and _delete_  stitch together the inidividual steps in to a fully automated play.  
+_--tag provision_ combines roles: vmware_20, foreman_20, os_10  
+_--tag delete_ combines roles: vmware_99, foreman_99, os_99  
+
 
 Create virtual machine, register to Foreman, install operating system, configure OS, install/configure application role:
 
@@ -205,7 +203,7 @@ Delete a virtual machine from IDM, Foreman and VMware:
 
 ---
 
-Three-step provision process:
+Provisioning the operating system follows a three-step process:
 
 | Step | Ansible Tag |
 |------|----------|
@@ -213,9 +211,8 @@ Three-step provision process:
 |  Configure Operation System | os_config |
 |  Configure Application Role | role_config |
 
-provision: vmware_20, foreman_20, os_10  
-delete: vmware_99, foreman_99, os_99
 
-Use _--skip-tags_ to run only certain pieces of provisioning.  For example, to update web configuration/content across the fleet - skip initial provisioning and OS configuration, only running the application role:  
+Use _--skip-tags_ to run only certain pieces of provisioning.  
+For example, to update web configuration/content across the fleet - skip initial provisioning and OS configuration, only running the application role:  
 `ansible-playbook tuxtech-main.yml --tags os_10 --limit web2.tuxtech.com --skip-tags os_provision,os_config
 `
