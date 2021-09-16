@@ -196,8 +196,12 @@ Provisioning the operating system follows a three-step process:
 
 
 Use _--skip-tags_ to run only certain pieces of provisioning.  
-For example, to update web configuration/content across the fleet - skip initial provisioning and OS configuration, only running the application role:  
+For example, to update web configuration/content across the fleet - skipping initial provisioning and OS configuration, only running the application role:  
 `ansible-playbook tuxtech-main.yml --tags os_10 --limit web2.tuxtech.com --skip-tags os_provision,os_config
+`
+
+Update OS packages and configuration, skipping provisioning and application role configuration:  
+`ansible-playbook tuxtech-main.yml --tags os_10 --limit idm1.tuxtech.com,web1.tuxtech.com --skip-tags os_provision,role_config
 `
 
 Automate all the Things!
