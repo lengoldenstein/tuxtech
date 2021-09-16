@@ -14,13 +14,17 @@
 - name: 'Install required packages'
   ansible.builtin.dnf:
     name:
+      - 'cockpit'
+      - 'cockpit-packagekit'
+      - 'cockpit-storaged'
+      - 'cockpit-ws'
+      - 'mlocate'
+      - 'postfix'
       - 'vim'
       # - 'httpd'
       # - 'nfs-utils'
-      - 'postfix'
       # - 'samba'
       # - 'samba-client'
-      - 'telnet'
       # - '@mysql:8.0/server'
       # -  '@php:7.2/common'
 
@@ -34,6 +38,7 @@
     - {name: 'atd', state: 'started', enabled: true}
     - {name: 'auditd', state: 'started', enabled: true}
     - {name: 'chronyd', state: 'started', enabled: true}
+    - {name: 'cockpit', state: 'started', enabled: true}
     - {name: 'crond', state: 'started', enabled: true}
     - {name: 'dbus', state: 'started', enabled: true}
     - {name: 'firewalld', state: 'stopped', enabled: false}
@@ -116,7 +121,7 @@
 
 
 - name: 'Join idm.tuxtech.com IDM domain'
-  include_tasks: 'ipa-client-install.yml'
+  ansible.builtin.include_tasks: 'ipa-client-install.yml'
   tags: 'idm_client'
 
 

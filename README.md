@@ -153,8 +153,8 @@ Delete VMware virtual guest clients
 
 Foreman
 -------
-Configure common settings for a Foreman/Satellite server
 Ansible collection tuxtech.foreman  
+Configure common settings for a Foreman/Satellite server  
 - Foreman host must have admin password set and matched in _tuxtech-configuration.yml_
 
 `ansible-playbook tuxtech-main.yml --tags foreman_10 --limit foreman1.tuxtech.com

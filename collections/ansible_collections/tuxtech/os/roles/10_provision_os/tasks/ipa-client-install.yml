@@ -17,7 +17,7 @@
         - --mkhomedir
         - --force-join
         - --unattended
-    # ignore_errors: true
+    ignore_errors: true
     no_log: true
   when:
     - hostgroup != 'CentOSStream_8_FMN'

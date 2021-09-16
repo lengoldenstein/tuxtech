@@ -148,7 +148,7 @@
         - 'Kickstart default iPXE - TuxTech'
         - 'Kickstart default'
         - 'Kickstart default finish'
-        - 'Kickstart default user data'
+        # - 'Kickstart default user data'
         - 'Linux host_init_config default'
     delegate_to: 'localhost'
 
@@ -171,7 +171,7 @@
         - 'Kickstart default iPXE - TuxTech'
         - 'Kickstart default'
         - 'Kickstart default finish'
-        - 'Kickstart default user data'
+        # - 'Kickstart default user data'
         - 'Linux host_init_config default'
     delegate_to: 'localhost'
 
@@ -186,11 +186,11 @@
       - {'os': 'CentOS 7', 'tmpl': 'Kickstart default iPXE - TuxTech', 'kind': 'iPXE'}
       - {'os': 'CentOS 7', 'tmpl': 'Kickstart default', 'kind': 'provision'}
       - {'os': 'CentOS 7', 'tmpl': 'Kickstart default finish', 'kind': 'finish'}
-      - {'os': 'CentOS 7', 'tmpl': 'Kickstart default user data', 'kind': 'user_data'}
+      # - {'os': 'CentOS 7', 'tmpl': 'Kickstart default user data', 'kind': 'user_data'}
       - {'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default iPXE - TuxTech', 'kind': 'iPXE'}
       - {'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default', 'kind': 'provision'}
       - {'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default finish', 'kind': 'finish'}
-      - {'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default user data', 'kind': 'user_data'}
+      # - {'os': 'CentOS Stream 8', 'tmpl': 'Kickstart default user data', 'kind': 'user_data'}
 
 
   # Create provisioning hostgroups
@@ -222,7 +222,11 @@
         - name: 'pxe_kernel_options'
           parameter_type: 'string'
           value: 'net.ifnames=0 biosdevname=0'
+        - name: 'bootloader-append'
+          parameter_type: 'string'
+          value: 'nofb'
         - name: 'remote_execution_ssh_keys'
+          parameter_type: 'string'
           value: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa3aUqQU68g7DXPTPx3r7uLz1FGI+WYs062x3qmuICVT789Q\
                   E++tWDKRO/Yg3EZwyKzEjFkDeASg8V5QkhkwVKqEmm7UCOreeEPbSLyr+NWGCeHhS7o2ZTfgROjgsBPdwFmYCq\
                   tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
@@ -263,7 +267,11 @@
         - name: 'pxe_kernel_options'
           parameter_type: 'string'
           value: 'net.ifnames=0 biosdevname=0'
+        - name: 'bootloader-append'
+          parameter_type: 'string'
+          value: 'nofb'
         - name: 'remote_execution_ssh_keys'
+          parameter_type: 'string'
           value: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa3aUqQU68g7DXPTPx3r7uLz1FGI+WYs062x3qmuICVT789Q\
                   E++tWDKRO/Yg3EZwyKzEjFkDeASg8V5QkhkwVKqEmm7UCOreeEPbSLyr+NWGCeHhS7o2ZTfgROjgsBPdwFmYCq\
                   tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
@@ -304,7 +312,11 @@
         - name: 'pxe_kernel_options'
           parameter_type: 'string'
           value: 'net.ifnames=0 biosdevname=0'
+        - name: 'bootloader-append'
+          parameter_type: 'string'
+          value: 'nofb'
         - name: 'remote_execution_ssh_keys'
+          parameter_type: 'string'
           value: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa3aUqQU68g7DXPTPx3r7uLz1FGI+WYs062x3qmuICVT789Q\
                   E++tWDKRO/Yg3EZwyKzEjFkDeASg8V5QkhkwVKqEmm7UCOreeEPbSLyr+NWGCeHhS7o2ZTfgROjgsBPdwFmYCq\
                   tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
@@ -345,7 +357,11 @@
         - name: 'pxe_kernel_options'
           parameter_type: 'string'
           value: 'net.ifnames=0 biosdevname=0'
+        - name: 'bootloader-append'
+          parameter_type: 'string'
+          value: 'nofb'
         - name: 'remote_execution_ssh_keys'
+          parameter_type: 'string'
           value: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa3aUqQU68g7DXPTPx3r7uLz1FGI+WYs062x3qmuICVT789Q\
                   E++tWDKRO/Yg3EZwyKzEjFkDeASg8V5QkhkwVKqEmm7UCOreeEPbSLyr+NWGCeHhS7o2ZTfgROjgsBPdwFmYCq\
                   tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\
@@ -386,7 +402,11 @@
         - name: 'pxe_kernel_options'
           parameter_type: 'string'
           value: 'net.ifnames=0 biosdevname=0'
+        - name: 'bootloader-append'
+          parameter_type: 'string'
+          value: 'nofb'
         - name: 'remote_execution_ssh_keys'
+          parameter_type: 'string'
           value: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa3aUqQU68g7DXPTPx3r7uLz1FGI+WYs062x3qmuICVT789Q\
                   E++tWDKRO/Yg3EZwyKzEjFkDeASg8V5QkhkwVKqEmm7UCOreeEPbSLyr+NWGCeHhS7o2ZTfgROjgsBPdwFmYCq\
                   tTXQMSHn431CwdpGEAwneANahOzEvFCgY947Ox83arYFexVd+BBLYaUK7Felwag3PlhKZfDmnydbOfGATbN9JL\

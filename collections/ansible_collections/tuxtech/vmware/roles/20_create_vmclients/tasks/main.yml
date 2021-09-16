@@ -27,9 +27,10 @@
         - size_gb: '{{ sdb_gb | default(20) }}'
           type: 'thin'
       cdrom:
-        - controller_number: 0
+        - type: 'iso'
+          controller_type: 'ide'
+          controller_number: 0
           unit_number: 0
-          type: 'iso'
           iso_path: '[nas412] /ISO Images/Linux/bootdisk_{{ tuxtech.foreman.hostname }}.iso'
           state: 'present'
       networks:

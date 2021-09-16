@@ -24,8 +24,13 @@
     community.vmware.vmware_guest:
       name: '{{ inventory_hostname }}'
       cdrom:
-        type: 'none'
+        - type: 'none'
+          controller_type: 'ide'
+          controller_number: 0
+          unit_number: 0
+          state: 'present'
     delegate_to: 'localhost'
+
   tags:
     - 'os_provision'
   module_defaults:
