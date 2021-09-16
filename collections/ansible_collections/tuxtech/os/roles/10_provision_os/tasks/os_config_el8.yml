@@ -6,10 +6,15 @@
     state: 'permissive'
 
 
-- name: 'Update installed software'
+- name: 'Update OS software'
   ansible.builtin.dnf:
     name: '*'
     update_only: true
+    enablerepo:
+      - 'baseos'
+      - 'app-stream'
+      - 'extras'
+    disablerepo: '*'
     state: 'latest'
 
 
