@@ -65,44 +65,8 @@
     theforeman.foreman.provisioning_template:
       name: 'Kickstart default iPXE - TuxTech'
       kind: 'iPXE'
-      template: |-
-        #!gpxe
-        <%#
-        kind: iPXE
-        name: Kickstart default iPXE
-        model: ProvisioningTemplate
-        oses:
-        - AlmaLinux
-        - CentOS
-        - Fedora
-        - RedHat
-        - Rocky
-        %>
-        <%
-          pxe_kernel_options = @host.params['pxe_kernel_options']
-          iface = @host.provision_interface
-          subnet4 = iface.subnet
-          subnet6 = iface.subnet6
-
-          if subnet4 && !subnet4.dhcp_boot_mode?
-            ks = foreman_url('provision', static: '1')
-          elsif subnet6 && !subnet6.dhcp_boot_mode?
-            ks = foreman_url('provision', static6: '1')
-          else
-            ks = foreman_url('provision')
-          end
-        -%>
-
-        echo Trying to ping Gateway: ${netX/gateway}
-        ping --count 1 ${netX/gateway} || echo Ping to Gateway failed or ping command not available.
-        echo Trying to ping DNS: ${netX/dns}
-        ping --count 1 ${netX/dns} || echo Ping to DNS failed or ping command not available.
-
-        kernel <%= "#{@host.url_for_boot(:kernel)}" %> initrd=initrd.img ks=<%= ks %> <%= pxe_kernel_options %> <%= snippet("kickstart_kernel_options", variables: {ipxe_net: true}).strip %>
-        initrd <%= "#{@host.url_for_boot(:initrd)}" %>
-        imgstat
-        sleep 2
-        boot
+      # file_name: 'templates/kickstart_default_ipxe_tuxtech.j2'  # doesn't seem to work with relative paths
+      template: '{{ lookup("file", "templates/kickstart_default_ipxe_tuxtech.j2") }}'
       operatingsystems:
         # - 'CentOS 7'
         # - 'CentOS_Stream 8'
@@ -418,7 +382,19 @@
       state: 'present'
     delegate_to: 'localhost'
 
+
   # Setup hammer credentials
+  # This seems to be done automatically by the installer??
+  # - name: 'Ensure /root/.hammer/cli.modules.d exists'
+  #   ansible.builtin.file:
+  #     path: '/root/.hammer/cli.modules.d'
+  #     owner: 'root'
+  #     group: 'root'
+  #     mode: '0700'
+  #     state: 'directory'
+
+  # - name: 'Populate /root/.hammer/cli.modules.d/foreman.yml'
+
 
   # Foreman bootdisk configuration
   - name: 'Ensure /var/lib/foreman/bootdisk exists'
