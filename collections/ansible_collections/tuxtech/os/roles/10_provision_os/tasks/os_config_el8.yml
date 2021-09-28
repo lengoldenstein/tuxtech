@@ -12,7 +12,7 @@
     update_only: true
     enablerepo:
       - 'baseos'
-      - 'app-stream'
+      - 'appstream'
       - 'extras'
     disablerepo: '*'
     state: 'latest'
