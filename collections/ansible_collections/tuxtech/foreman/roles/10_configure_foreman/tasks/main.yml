@@ -48,7 +48,7 @@
         zerombr
         clearpart --all --initlabel
         # Physical layout
-        partition /boot --ondisk=sda --size=1000  --grow --fstype=xfs --asprimary
+        partition /boot --ondisk=sda --size=1000  --grow --fstype=ext4 --asprimary
         partition pv.21 --onpart=sdb --size=16384 --grow
         # LVM layout
         volgroup vg_root pv.21

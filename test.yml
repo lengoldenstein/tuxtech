@@ -1,0 +1,15 @@
+- name: 'testing'
+  hosts: 'localhost'
+  remote_user: 'root'
+  gather_facts: false
+  vars:
+  vars_files:
+    - 'tuxtech-configuration.yml'
+  tasks:
+    - name: 'debug'
+      ansible.builtin.debug:
+        msg:
+          - 'server: {{ item.value }}'  # tuxtech.test.servers
+          - 'prod: {{ tuxtech.test.servers.prd }}'
+          - 'dev: {{ tuxtech.test.servers.dev }}'
+      loop: '{{ tuxtech.test.servers | dict2items }}'

@@ -33,6 +33,7 @@
 
   tags:
     - 'os_provision'
+
   module_defaults:
   # Can this be external file for cleanliness?
     community.vmware.vmware_guest_powerstate:
