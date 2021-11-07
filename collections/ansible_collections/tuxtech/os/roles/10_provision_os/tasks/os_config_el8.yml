@@ -21,6 +21,7 @@
 - name: 'Install required packages'
   ansible.builtin.dnf:
     name:
+      - '@Base'
       - 'cockpit'
       - 'cockpit-packagekit'
       - 'cockpit-storaged'
@@ -132,5 +133,5 @@
   tags: 'idm_client'
 
 
-- name: Force all notified handlers to run at this point, not waiting for normal sync points
-  ansible.builtin.meta: flush_handlers
+- name: 'Force all notified handlers to run at this point, not waiting for normal sync points'
+  ansible.builtin.meta: 'flush_handlers'
